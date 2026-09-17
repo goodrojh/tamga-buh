@@ -10,11 +10,13 @@ export function TamgaMark({ className }: { className?: string }) {
 
 export function Logo({ light = false, className = '' }: { light?: boolean; className?: string }) {
   return (
-    <a href="#top" className={'flex items-center gap-2.5 ' + className} aria-label="ТАМГА — на главную">
+    <a href="#top" className={'flex items-center gap-2.5 ' + className} aria-label="ТамгаБух — на главную">
       <span className={'w-9 h-9 rounded-xl flex items-center justify-center ' + (light ? 'bg-gold/15 border border-gold/30' : 'bg-night')}>
         <TamgaMark className="w-5 h-5 text-gold" />
       </span>
-      <span className={'font-display font-bold tracking-[0.12em] text-[17px] ' + (light ? 'text-white' : 'text-night')}>ТАМГА</span>
+      <span className={'font-display font-bold tracking-[0.1em] text-[16px] ' + (light ? 'text-white' : 'text-night')}>
+        ТАМГА<span className="text-gold">БУХ</span>
+      </span>
     </a>
   )
 }

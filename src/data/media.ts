@@ -18,4 +18,8 @@ export const media = {
   night: base + 'steppe-night.webp',
   calendar: base + 'calendar.webp',
   handshake: base + 'handshake.webp',
+  owner: base + 'owner.webp',
+  ownerSquare: base + 'owner-square.webp',
+  trademark: base + 'trademark.webp',
+  trademarkThumb: base + 'trademark-thumb.webp',
 }

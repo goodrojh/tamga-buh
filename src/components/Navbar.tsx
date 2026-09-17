@@ -10,6 +10,7 @@ const NAV = [
   { label: 'Калмыкия 1 %', href: '#kalmykia' },
   { label: 'Цены', href: '#pricing' },
   { label: 'Калькулятор', href: '#calculator' },
+  { label: 'О нас', href: '#about' },
   { label: 'Вопросы', href: '#faq' },
 ]
 

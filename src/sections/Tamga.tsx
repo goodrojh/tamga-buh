@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ShieldCheck, Clock, Eye, MessageCircle } from 'lucide-react'
 import { media } from '@/data/media'
+import { site } from '@/config/site'
 import { useLead } from '@/components/LeadModal'
 import { TamgaMark } from '@/components/TamgaMark'
 
@@ -57,13 +58,13 @@ export default function Tamga() {
 
           {/* Expert card */}
           <div className="mt-8 rounded-[24px] bg-sand border border-gray-200 p-4 flex flex-col sm:flex-row gap-4 items-center">
-            <img src={media.portrait} alt="Главный бухгалтер ТАМГА" loading="lazy" className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-top shrink-0" />
+            <img src={media.ownerSquare} alt={site.owner.name} loading="lazy" className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shrink-0" />
             <div className="flex-1 text-center sm:text-left">
-              <div className="text-[12px] uppercase tracking-[0.15em] text-gray-400">Главный бухгалтер</div>
-              <div className="font-display font-semibold text-lg text-night mt-1">Ответит на сложный вопрос лично</div>
+              <div className="text-[12px] uppercase tracking-[0.15em] text-gray-400">{site.owner.role}</div>
+              <div className="font-display font-semibold text-lg text-night mt-1">{site.owner.name} ответит на сложный вопрос лично</div>
               <p className="text-[13px] text-gray-500 mt-1">Требование ФНС, переезд в Калмыкию, НДС на УСН, спор с маркетплейсом — первые 15 минут бесплатно.</p>
             </div>
-            <button onClick={() => open({ source: 'expert', topic: 'Вопрос главному бухгалтеру', title: 'Вопрос главбуху', subtitle: 'Опишите ситуацию — главбух перезвонит в течение рабочего дня.', cta: 'Задать вопрос' })} className="rounded-full bg-night text-white font-semibold px-5 py-3 inline-flex items-center gap-2 hover:bg-night-3 transition-colors whitespace-nowrap">
+            <button onClick={() => open({ source: 'expert', topic: 'Вопрос руководителю', title: 'Вопрос руководителю', subtitle: 'Опишите ситуацию — перезвоним в течение рабочего дня.', cta: 'Задать вопрос' })} className="rounded-full bg-night text-white font-semibold px-5 py-3 inline-flex items-center gap-2 hover:bg-night-3 transition-colors whitespace-nowrap">
               <MessageCircle className="w-4 h-4 text-gold" /> Задать вопрос
             </button>
           </div>

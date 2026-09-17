@@ -83,7 +83,7 @@ export default function FAQ() {
 
         <div className="mt-12 bg-sand rounded-[20px] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <img src={media.portrait} alt="" className="w-12 h-12 rounded-full object-cover object-top border-2 border-white shadow" />
+            <img src={media.ownerSquare} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
             <div>
               <p className="font-semibold text-[15px] text-night">Остались вопросы?</p>
               <p className="text-[14px] text-gray-500">Бухгалтер ответит лично, без скриптов</p>

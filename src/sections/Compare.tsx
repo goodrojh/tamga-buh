@@ -37,7 +37,7 @@ export default function Compare() {
             <thead>
               <tr className="text-left">
                 <th className="p-4 md:p-5 text-[12px] uppercase tracking-wider text-gray-400 font-semibold">Критерий</th>
-                <th className="p-4 md:p-5 bg-night text-white font-display font-semibold text-[15px] rounded-t-2xl">ТАМГА</th>
+                <th className="p-4 md:p-5 bg-night text-white font-display font-semibold text-[15px] rounded-t-2xl">ТАМГАБУХ</th>
                 <th className="p-4 md:p-5 text-[13px] font-semibold text-gray-600">Штатный бухгалтер</th>
                 <th className="p-4 md:p-5 text-[13px] font-semibold text-gray-600">Фрилансер</th>
                 <th className="p-4 md:p-5 text-[13px] font-semibold text-gray-600">Онлайн-бухгалтерия</th>

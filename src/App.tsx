@@ -12,6 +12,7 @@ import Pricing from '@/sections/Pricing'
 import Calculator from '@/sections/Calculator'
 import Compare from '@/sections/Compare'
 import Tamga from '@/sections/Tamga'
+import About from '@/sections/About'
 import Cases from '@/sections/Cases'
 import FAQ from '@/sections/FAQ'
 import Blog from '@/sections/Blog'
@@ -33,6 +34,7 @@ export default function App() {
         <Calculator />
         <Compare />
         <Tamga />
+        <About />
         <Cases />
         <FAQ />
         <Blog />
