@@ -37,7 +37,7 @@ export default function About() {
               <img src={media.owner} alt={site.owner.name} loading="lazy" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-night/75 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 text-white">
-                <div className="font-display font-semibold text-xl md:text-2xl">{site.owner.name}</div>
+                <div className="font-display font-semibold text-xl md:text-2xl">{site.owner.fullName}</div>
                 <div className="text-white/75 text-sm mt-1">{site.owner.role}</div>
               </div>
             </div>
@@ -80,9 +80,9 @@ export default function About() {
                 <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gold">
                   <Award className="w-4 h-4" /> Зарегистрированный товарный знак
                 </div>
-                <div className="font-display font-semibold text-xl mt-2">«{site.trademark.name}» — свидетельство № {site.trademark.number}</div>
+                <div className="font-display font-semibold text-xl mt-2">«{site.trademark.name}» — товарный знак защищён</div>
                 <p className="text-white/65 text-[13px] mt-2 leading-relaxed">
-                  Зарегистрирован Роспатентом {site.trademark.registered} г., приоритет от {site.trademark.priority} г. Действует до {site.trademark.validUntil} г. Бренд защищён — это значит, что мы здесь надолго.
+                  Зарегистрирован Роспатентом {site.trademark.registered} г., приоритет от {site.trademark.priority} г. Действует до {site.trademark.validUntil} г. Защищённый бренд — это значит, что мы здесь надолго.
                 </p>
                 <button type="button" onClick={() => setLightbox(true)} className="mt-3 text-[13px] font-semibold text-gold hover:text-gold-light inline-flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4" /> Посмотреть свидетельство
@@ -93,7 +93,7 @@ export default function About() {
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
-                onClick={() => open({ source: 'about', topic: 'Личный вопрос руководителю', title: `Написать ${site.owner.name === 'Надвидов' ? 'руководителю' : site.owner.name}`, subtitle: 'Опишите ситуацию — отвечу лично в течение рабочего дня.', cta: 'Отправить' })}
+                onClick={() => open({ source: 'about', topic: 'Личный вопрос руководителю', title: 'Написать Корнею Мергеновичу', subtitle: 'Опишите ситуацию — отвечу лично в течение рабочего дня.', cta: 'Отправить' })}
                 className="rounded-full bg-night text-white font-semibold px-6 py-3.5 hover:bg-night-3 transition-colors inline-flex items-center justify-center gap-2"
               >
                 <MessageCircle className="w-4 h-4 text-gold" /> Написать руководителю
@@ -116,7 +116,7 @@ export default function About() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.96, opacity: 0, transition: { duration: 0.12 } }}
               src={media.trademark}
-              alt="Свидетельство на товарный знак ТАМГАБУХ № 1226547"
+              alt="Свидетельство на товарный знак ТАМГАБУХ"
               className="relative max-h-full max-w-full rounded-lg shadow-panel object-contain"
               onClick={(e) => e.stopPropagation()}
             />

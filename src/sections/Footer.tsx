@@ -73,7 +73,7 @@ export default function Footer() {
                 <li>{site.requisites.name}</li>
                 <li>ИНН {site.requisites.inn}</li>
                 <li>ОГРН {site.requisites.ogrn}</li>
-                <li><a href="#about" className="hover:text-white">Товарный знак «{site.trademark.name}» № {site.trademark.number}</a></li>
+                <li><a href="#about" className="hover:text-white">Товарный знак «{site.trademark.name}» зарегистрирован</a></li>
                 <li><a id="policy" href="#policy" className="hover:text-white underline decoration-white/20">Политика конфиденциальности</a></li>
               </ul>
             </div>
