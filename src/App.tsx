@@ -1,0 +1,40 @@
+import { LeadProvider } from '@/components/LeadModal'
+import MobileBar from '@/components/MobileBar'
+import Hero from '@/sections/Hero'
+import Features from '@/sections/Features'
+import Audience from '@/sections/Audience'
+import Services from '@/sections/Services'
+import Kalmykia from '@/sections/Kalmykia'
+import HowItWorks from '@/sections/HowItWorks'
+import Pricing from '@/sections/Pricing'
+import Calculator from '@/sections/Calculator'
+import Compare from '@/sections/Compare'
+import Tamga from '@/sections/Tamga'
+import Cases from '@/sections/Cases'
+import FAQ from '@/sections/FAQ'
+import Blog from '@/sections/Blog'
+import Footer from '@/sections/Footer'
+
+export default function App() {
+  return (
+    <LeadProvider>
+      <main className="min-h-screen">
+        <Hero />
+        <Features />
+        <Audience />
+        <Services />
+        <Kalmykia />
+        <HowItWorks />
+        <Pricing />
+        <Calculator />
+        <Compare />
+        <Tamga />
+        <Cases />
+        <FAQ />
+        <Blog />
+        <Footer />
+      </main>
+      <MobileBar />
+    </LeadProvider>
+  )
+}

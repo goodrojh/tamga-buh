@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --night: #0A1A33;
+  --gold: #D9A93B;
+  --sand: #F6F1E7;
+  color-scheme: light;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  @apply bg-sand text-ink font-sans antialiased;
+  overflow-x: hidden;
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+.glass { @apply bg-white/10 backdrop-blur-xl border border-white/15; }
+.gold-text {
+  background: linear-gradient(120deg, #F0C96A 0%, #D9A93B 45%, #B8891F 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tamga-grid {
+  background-image:
+    linear-gradient(rgba(217,169,59,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217,169,59,0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: marquee 40s linear infinite; }
+.marquee:hover { animation-play-state: paused; }
+
+input, textarea, select { font: inherit; }
