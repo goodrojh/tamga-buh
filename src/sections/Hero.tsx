@@ -63,7 +63,7 @@ export default function Hero() {
           >
             Бухгалтерия, за которую
             <br />
-            отвечаем <span className="gold-text italic">как за свою</span>
+            отвечаем <span className="gold-text italic inline-block pr-[0.15em] -mr-[0.15em]">как за свою</span>
           </motion.h1>
 
           <motion.p

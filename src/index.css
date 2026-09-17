@@ -25,6 +25,8 @@ body {
 
 .glass { @apply bg-white/10 backdrop-blur-xl border border-white/15; }
 .gold-text {
+  /* padding нужен, чтобы курсивные буквы не обрезались background-clip */
+  padding-right: 0.06em;
   background: linear-gradient(120deg, #F0C96A 0%, #D9A93B 45%, #B8891F 100%);
   -webkit-background-clip: text;
   background-clip: text;
