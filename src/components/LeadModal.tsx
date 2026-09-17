@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { X, Phone, Send, CheckCircle2, MessageCircle } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { TamgaMark } from './TamgaMark'
+import { MaxIcon } from './MaxIcon'
 
 export interface LeadOptions {
   /** Заголовок окна */
@@ -116,27 +117,30 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
       className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, transition: { duration: 0.12 } }}
+      transition={{ duration: 0.2 }}
     >
       <div className="absolute inset-0 bg-night/70 backdrop-blur-sm" onClick={onClose} />
       <motion.div
         role="dialog"
         aria-modal="true"
-        initial={{ y: 40, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 40, opacity: 0, scale: 0.98 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+        initial={{ y: 24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 16, opacity: 0, transition: { duration: 0.12 } }}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
         className="relative w-full sm:max-w-[520px] max-h-[92vh] overflow-y-auto bg-white rounded-t-[28px] sm:rounded-[28px] shadow-panel"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="relative bg-night text-white px-6 pt-6 pb-7 rounded-t-[28px] overflow-hidden">
           <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-gold/25 blur-3xl" />
           <div className="absolute inset-0 tamga-grid opacity-40" />
           <button
-            onClick={onClose}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onClose() }}
             aria-label="Закрыть"
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            className="absolute top-3 right-3 z-20 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 active:bg-white/40 flex items-center justify-center transition-colors touch-manipulation"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
           <div className="relative flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl bg-gold/15 border border-gold/30 flex items-center justify-center shrink-0">
@@ -173,8 +177,11 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
               <a href={tgLink(composeText())} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#2AABEE] text-white font-semibold py-3 px-5">
                 <Send className="w-4 h-4" /> Telegram
               </a>
+              <a href={site.max} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#5B4BFF] text-white font-semibold py-3 px-5">
+                <MaxIcon className="w-4 h-4" /> MAX
+              </a>
             </div>
-            <button onClick={onClose} className="mt-4 text-sm text-gray-400 hover:text-gray-600">Закрыть</button>
+            <button type="button" onClick={onClose} className="mt-4 text-sm text-gray-400 hover:text-gray-600">Закрыть</button>
           </div>
         ) : (
           <form onSubmit={submit} className="p-6 space-y-4">
@@ -232,6 +239,8 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
               <a href={waLink()} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">WhatsApp</a>
               {' · '}
               <a href={tgLink()} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">Telegram</a>
+              {' · '}
+              <a href={site.max} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">MAX</a>
             </p>
           </form>
         )}

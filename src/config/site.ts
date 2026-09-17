@@ -9,6 +9,7 @@ export const site = {
   phoneHref: 'tel:+79610000000',
   whatsapp: '79610000000', // TODO: номер без "+" для wa.me
   telegram: 'tamga_buh', // TODO: username без "@"
+  max: 'https://max.ru/', // TODO: ссылка на профиль/чат в мессенджере MAX
   email: 'info@tamga-buh.ru', // TODO
   address: 'Республика Калмыкия, г. Элиста', // TODO: улица, офис
   workHours: 'Пн–Пт 9:00–19:00, Сб 10:00–15:00 (МСК)',

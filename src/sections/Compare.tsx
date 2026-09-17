@@ -28,8 +28,7 @@ export default function Compare() {
     <section className="bg-sand py-20 md:py-28 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Сравнение</span>
-          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1] mt-4">Честно про альтернативы</h2>
+          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1]">Честно про альтернативы</h2>
           <p className="text-gray-500 mt-4 text-lg">Штатный бухгалтер, фрилансер, онлайн-сервис или мы. Сравнили по тому, что реально важно владельцу.</p>
         </div>
 

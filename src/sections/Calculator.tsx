@@ -72,8 +72,7 @@ export default function Calculator() {
     <section id="calculator" className="bg-white py-20 md:py-28 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Калькулятор</span>
-          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1] mt-4">Узнайте цену за 30 секунд</h2>
+          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1]">Узнайте цену за 30 секунд</h2>
           <p className="text-gray-500 mt-4 text-lg">Считаем по тому же прайсу, что и наши бухгалтеры. Никаких «оставьте телефон, и мы скажем».</p>
         </div>
 
@@ -114,7 +113,7 @@ export default function Calculator() {
           {/* Result */}
           <div className="lg:col-span-2">
             <div className="sticky top-6 bg-night text-white rounded-[28px] p-6 md:p-8 overflow-hidden relative">
-              <div className="absolute -top-20 -right-20 w-64 h-64 bg-gold/25 rounded-full blur-3xl" />
+              <div className="hidden md:block absolute -top-20 -right-20 w-64 h-64 bg-gold/25 rounded-full blur-3xl" />
               <div className="absolute inset-0 tamga-grid opacity-30" />
               <div className="relative">
                 <div className="text-[12px] uppercase tracking-[0.15em] text-white/50">Ваша конфигурация</div>

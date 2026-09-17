@@ -16,13 +16,10 @@ export default function Features() {
   const { open } = useLead()
   return (
     <section className="w-full px-4 md:px-6 py-20 md:py-[120px] bg-sand relative overflow-hidden">
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gold/10 rounded-full blur-[120px] -translate-y-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-night/10 rounded-full blur-[100px] translate-y-1/2 pointer-events-none" />
+      <div className="hidden md:block absolute top-0 left-1/4 w-[500px] h-[500px] bg-gold/10 rounded-full blur-[120px] -translate-y-1/2 pointer-events-none" />
+      <div className="hidden md:block absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-night/10 rounded-full blur-[100px] translate-y-1/2 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 mb-12 md:mb-16 text-center">
-        <motion.span initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-gold-dark mb-4">
-          Что вы получаете
-        </motion.span>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -75,7 +72,7 @@ export default function Features() {
         {/* Card 2 — tax calendar */}
         <motion.div variants={cardVariants} whileHover={{ y: -5 }} className="bg-white rounded-[32px] border border-gray-200 p-6 flex flex-col overflow-hidden relative min-h-[460px]">
           <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-white to-night/5" />
-          <div className="absolute top-1/4 right-0 w-64 h-64 bg-gold/20 rounded-full blur-[80px]" />
+          <div className="hidden md:block absolute top-1/4 right-0 w-64 h-64 bg-gold/20 rounded-full blur-[80px]" />
           <div className="relative z-10 w-full flex-1 flex flex-col items-center justify-center pointer-events-none select-none py-6">
             <div className="w-full max-w-[300px] bg-white/60 backdrop-blur-xl border border-white/80 rounded-[24px] p-6 shadow-2xl shadow-night/10">
               <div className="flex items-center gap-2 mb-4">

@@ -1,6 +1,7 @@
 import { Phone, MessageCircle, Send, FileText } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { useLead } from './LeadModal'
+import { MaxIcon } from './MaxIcon'
 
 /** Липкая панель действий на мобильных: позвонить / WhatsApp / Telegram / заявка */
 export default function MobileBar() {
@@ -12,7 +13,8 @@ export default function MobileBar() {
         <a href={site.phoneHref} className={item}><Phone className="w-5 h-5 text-gold" />Позвонить</a>
         <a href={waLink()} target="_blank" rel="noopener" className={item}><MessageCircle className="w-5 h-5 text-[#25D366]" />WhatsApp</a>
         <a href={tgLink()} target="_blank" rel="noopener" className={item}><Send className="w-5 h-5 text-[#2AABEE]" />Telegram</a>
-        <button onClick={() => open({ source: 'mobile-bar', topic: 'Заявка с мобильной панели' })} className={item + ' bg-gold text-night'}><FileText className="w-5 h-5" />Заявка</button>
+        <a href={site.max} target="_blank" rel="noopener" className={item}><MaxIcon className="w-5 h-5 text-[#8B7CFF]" />MAX</a>
+        <button type="button" onClick={() => open({ source: 'mobile-bar', topic: 'Заявка с мобильной панели' })} className={item + ' bg-gold text-night'}><FileText className="w-5 h-5" />Заявка</button>
       </div>
     </div>
   )

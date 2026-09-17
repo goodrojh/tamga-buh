@@ -2,8 +2,9 @@
 const base = import.meta.env.BASE_URL + 'media/'
 
 export const media = {
-  heroVideo: base + 'hero-steppe.mp4',
-  heroPoster: base + 'steppe-gold.webp',
+  heroVideo: base + 'hero-desk.mp4',
+  heroVideoMobile: base + 'hero-desk-mobile.mp4',
+  heroPoster: base + 'hero-desk-poster.webp',
   sealVideo: base + 'seal-stamp.mp4',
   steppe: base + 'steppe-gold.webp',
   desk: base + 'desk-seal.webp',

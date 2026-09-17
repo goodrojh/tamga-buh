@@ -11,6 +11,11 @@
 }
 
 html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 84px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .marquee { animation: none; }
+}
 body {
   @apply bg-sand text-ink font-sans antialiased;
   overflow-x: hidden;

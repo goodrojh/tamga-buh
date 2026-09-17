@@ -15,7 +15,7 @@ npm run deploy   # публикация на GitHub Pages (ветка gh-pages)
 
 ## Что заменить перед запуском
 
-1. **`src/config/site.ts`** — телефон, WhatsApp, Telegram, e-mail, адрес, реквизиты, ссылки на соцсети.
+1. **`src/config/site.ts`** — телефон, WhatsApp, Telegram, ссылка на MAX (`site.max`), e-mail, адрес, реквизиты, соцсети.
 2. **`site.formEndpoint`** — URL для приёма заявок (Formspree, свой бэкенд, Telegram-бот через прокси).
    Пока пусто — заявка открывает WhatsApp/Telegram с готовым текстом (работает без бэкенда).
 3. **`src/data/pricing.ts`** — цены сопровождения взяты из прайса (колонка «Будет с учётом изменений»).
@@ -30,5 +30,7 @@ npm run deploy   # публикация на GitHub Pages (ветка gh-pages)
 - `src/sections/*` — секции страницы в порядке появления (см. `src/App.tsx`).
 - `src/components/LeadModal.tsx` — единая модальная форма; любая кнопка вызывает `useLead().open({...})`
   со своим заголовком и темой заявки.
-- `src/components/MobileBar.tsx` — липкая панель «Позвонить / WhatsApp / Telegram / Заявка» на мобильных.
+- `src/components/Navbar.tsx` — фиксированное меню (ширина = ширине контента).
+- `src/components/MobileBar.tsx` — липкая панель «Позвонить / WhatsApp / Telegram / MAX / Заявка» на мобильных.
+- `src/components/ArticleModal.tsx` + `src/data/articles.ts` — статьи блога, открываются в окне с начала.
 - `src/data/pricing.ts` — матрица прайса и функция `calculate()` для калькулятора.

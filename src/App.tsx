@@ -1,4 +1,6 @@
 import { LeadProvider } from '@/components/LeadModal'
+import { ArticleProvider } from '@/components/ArticleModal'
+import Navbar from '@/components/Navbar'
 import MobileBar from '@/components/MobileBar'
 import Hero from '@/sections/Hero'
 import Features from '@/sections/Features'
@@ -18,6 +20,8 @@ import Footer from '@/sections/Footer'
 export default function App() {
   return (
     <LeadProvider>
+      <ArticleProvider>
+      <Navbar />
       <main className="min-h-screen">
         <Hero />
         <Features />
@@ -35,6 +39,7 @@ export default function App() {
         <Footer />
       </main>
       <MobileBar />
+      </ArticleProvider>
     </LeadProvider>
   )
 }

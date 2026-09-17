@@ -16,7 +16,7 @@ export default function Tamga() {
     <section id="tamga" className="bg-white py-20 md:py-28 px-4 md:px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <motion.div initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
-          <div className="absolute -inset-6 bg-gold/15 blur-3xl rounded-full" />
+          <div className="hidden md:block absolute -inset-6 bg-gold/15 blur-3xl rounded-full" />
           <div className="relative rounded-[32px] overflow-hidden shadow-panel aspect-[4/3] bg-night">
             <video autoPlay muted loop playsInline poster={media.desk} className="w-full h-full object-cover">
               <source src={media.sealVideo} type="video/mp4" />
@@ -37,8 +37,7 @@ export default function Tamga() {
         </motion.div>
 
         <div>
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Наши обязательства</span>
-          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1] mt-4">
+          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1]">
             Три обещания, <br />
             <span className="gold-text">за которые отвечаем</span>
           </h2>

@@ -4,6 +4,7 @@ import { media } from '@/data/media'
 import { site, waLink, tgLink } from '@/config/site'
 import { useLead } from '@/components/LeadModal'
 import { Logo } from '@/components/TamgaMark'
+import { MaxIcon } from '@/components/MaxIcon'
 
 export default function Footer() {
   const { open } = useLead()
@@ -35,6 +36,7 @@ export default function Footer() {
           <div className="mt-5 flex items-center gap-3">
             <a href={waLink()} target="_blank" rel="noopener" className="w-11 h-11 rounded-full bg-[#25D366] flex items-center justify-center hover:scale-110 transition-transform" aria-label="WhatsApp"><MessageCircle className="w-5 h-5 text-white" /></a>
             <a href={tgLink()} target="_blank" rel="noopener" className="w-11 h-11 rounded-full bg-[#2AABEE] flex items-center justify-center hover:scale-110 transition-transform" aria-label="Telegram"><Send className="w-5 h-5 text-white" /></a>
+            <a href={site.max} target="_blank" rel="noopener" className="w-11 h-11 rounded-full bg-[#5B4BFF] flex items-center justify-center hover:scale-110 transition-transform" aria-label="MAX"><MaxIcon className="w-5 h-5 text-white" /></a>
           </div>
         </div>
 
@@ -60,6 +62,7 @@ export default function Footer() {
               <ul className="space-y-2.5 text-[13px] text-white/60">
                 <li className="flex gap-2"><Phone className="w-4 h-4 text-gold shrink-0" /><a href={site.phoneHref} className="hover:text-white">{site.phone}</a></li>
                 <li className="flex gap-2"><Mail className="w-4 h-4 text-gold shrink-0" /><a href={'mailto:' + site.email} className="hover:text-white">{site.email}</a></li>
+                <li className="flex gap-2"><MessageCircle className="w-4 h-4 text-gold shrink-0" /><span><a href={waLink()} target="_blank" rel="noopener" className="hover:text-white">WhatsApp</a> · <a href={tgLink()} target="_blank" rel="noopener" className="hover:text-white">Telegram</a> · <a href={site.max} target="_blank" rel="noopener" className="hover:text-white">MAX</a></span></li>
                 <li className="flex gap-2"><MapPin className="w-4 h-4 text-gold shrink-0" />{site.address}</li>
                 <li className="flex gap-2"><Clock className="w-4 h-4 text-gold shrink-0" />{site.workHours}</li>
               </ul>

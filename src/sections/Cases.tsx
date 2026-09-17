@@ -35,12 +35,11 @@ export default function Cases() {
   return (
     <section id="cases" className="bg-night text-white py-20 md:py-28 px-4 md:px-6 relative overflow-hidden">
       <div className="absolute inset-0 tamga-grid opacity-40" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold/15 rounded-full blur-[140px]" />
+      <div className="hidden md:block absolute top-0 right-0 w-[500px] h-[500px] bg-gold/15 rounded-full blur-[140px]" />
       <div className="relative max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold">Из практики</span>
-            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.1] mt-4 max-w-2xl">Ситуации, которые мы разбираем каждую неделю</h2>
+            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.1] max-w-2xl">Ситуации, которые мы разбираем каждую неделю</h2>
           </div>
           <p className="text-white/60 max-w-sm">Узнали себя? Значит, решение уже есть — и обычно оно быстрее и дешевле, чем кажется.</p>
         </div>

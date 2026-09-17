@@ -40,8 +40,7 @@ export default function Audience() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="max-w-2xl">
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Кому мы подходим</span>
-            <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1] mt-4">
+            <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1]">
               Мы знаем, что у вас болит. <br className="hidden md:block" />
               Потому что уже лечили это
             </h2>
@@ -57,7 +56,7 @@ export default function Audience() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="group relative rounded-[28px] border border-gray-200 bg-sand/50 hover:bg-night hover:border-night p-6 md:p-8 transition-colors duration-300 overflow-hidden"
+              className="group relative flex flex-col rounded-[28px] border border-gray-200 bg-sand/50 hover:bg-night hover:border-night p-6 md:p-8 transition-colors duration-300 overflow-hidden"
             >
               <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-gold/10 group-hover:bg-gold/20 blur-2xl transition-colors" />
               <div className="flex items-start justify-between gap-4">
@@ -80,10 +79,10 @@ export default function Audience() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-5 rounded-2xl bg-white group-hover:bg-white/10 border border-gray-100 group-hover:border-white/10 p-4 text-[15px] text-night group-hover:text-white leading-relaxed transition-colors">
+              <div className="mt-auto pt-5"><div className="rounded-2xl bg-white group-hover:bg-white/10 border border-gray-100 group-hover:border-white/10 p-4 text-[15px] text-night group-hover:text-white leading-relaxed transition-colors">
                 <span className="font-bold text-gold-dark group-hover:text-gold">Что делаем: </span>
                 {promise}
-              </div>
+              </div></div>
             </motion.div>
           ))}
         </div>

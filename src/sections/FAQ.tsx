@@ -46,8 +46,7 @@ export default function FAQ() {
     <section id="faq" className="bg-white py-20 md:py-28 px-4 md:px-6">
       <div className="max-w-[820px] mx-auto">
         <div className="text-center mb-10">
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Вопросы</span>
-          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-tight mt-4 mb-3">Спрашивают перед тем, как позвонить</h2>
+          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-tight mb-3">Спрашивают перед тем, как позвонить</h2>
           <p className="text-gray-500">Если вашего вопроса нет — задайте его нам, ответим за 15 минут.</p>
         </div>
 

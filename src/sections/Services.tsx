@@ -23,8 +23,7 @@ export default function Services() {
       <div className="absolute inset-0 tamga-grid opacity-60 pointer-events-none" />
       <div className="max-w-7xl mx-auto relative">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Услуги</span>
-          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1] mt-4">Всё, что нужно бизнесу — в одном окне</h2>
+          <h2 className="font-display text-3xl md:text-5xl font-semibold text-night leading-[1.1]">Всё, что нужно бизнесу — в одном окне</h2>
           <p className="text-gray-500 mt-4 text-lg">Не отправляем «к юристам» и «в банк». Регистрируем, открываем счёт, ведём учёт и, если понадобится, закрываем — одна команда от начала до конца.</p>
         </div>
 
@@ -68,7 +67,7 @@ export default function Services() {
 
         {/* compact price list */}
         <div className="mt-12 bg-night rounded-[28px] p-6 md:p-10 text-white relative overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-gold/20 rounded-full blur-3xl" />
+          <div className="hidden md:block absolute -top-20 -right-20 w-72 h-72 bg-gold/20 rounded-full blur-3xl" />
           <div className="relative flex flex-col lg:flex-row gap-8 lg:gap-14">
             <div className="lg:w-1/3">
               <h3 className="font-display text-2xl md:text-3xl font-semibold leading-tight">Разовые услуги <span className="gold-text">без скрытых доплат</span></h3>

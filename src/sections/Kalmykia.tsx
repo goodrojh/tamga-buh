@@ -15,10 +15,7 @@ export default function Kalmykia() {
       <div className="relative max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
-            <span className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] uppercase text-gold">
-              <MapPin className="w-4 h-4" /> Элиста, Республика Калмыкия
-            </span>
-            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.1] mt-4">
+            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.1]">
               Регион, где УСН — <span className="gold-text">1 % вместо 6 %</span>
             </h2>
             <p className="text-white/75 text-lg mt-5 leading-relaxed">
@@ -55,7 +52,7 @@ export default function Kalmykia() {
 
           {/* Savings card */}
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
-            <div className="absolute -inset-4 bg-gold/20 blur-3xl rounded-full" />
+            <div className="hidden md:block absolute -inset-4 bg-gold/20 blur-3xl rounded-full" />
             <div className="relative bg-white text-night rounded-[28px] p-6 md:p-8 shadow-panel">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Пример экономии</span>

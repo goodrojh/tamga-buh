@@ -19,8 +19,7 @@ export default function Pricing() {
   return (
     <section id="pricing" className="w-full px-0 py-20 md:py-28 bg-sand overflow-hidden relative">
       <div className="text-center px-6 mb-10 relative z-10">
-        <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Тарифы</span>
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="font-display font-semibold text-3xl md:text-[48px] text-night leading-[1.06] tracking-tight mt-4">
+        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="font-display font-semibold text-3xl md:text-[48px] text-night leading-[1.06] tracking-tight">
           Понятные цены. Без «от».
         </motion.h2>
         <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.1 }} className="mt-4 text-base text-gray-500 max-w-xl mx-auto">

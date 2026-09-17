@@ -11,12 +11,11 @@ export default function HowItWorks() {
   return (
     <section id="how" className="w-full px-4 md:px-12 lg:px-20 py-20 md:py-28 bg-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="absolute -top-24 -left-24 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
-        <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }} className="absolute -bottom-24 -right-24 w-96 h-96 bg-night/10 rounded-full blur-3xl" />
+        <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} className="hidden md:block absolute -top-24 -left-24 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
+        <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }} className="hidden md:block absolute -bottom-24 -right-24 w-96 h-96 bg-night/10 rounded-full blur-3xl" />
       </div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-14 md:mb-20 flex flex-col items-center gap-4 relative z-10">
-        <span className="text-xs font-bold tracking-[0.2em] uppercase text-gold-dark">Как начать</span>
         <h2 className="font-display font-semibold text-3xl md:text-[48px] leading-[1.1] max-w-2xl text-night">
           Переход к нам занимает один день. <br className="hidden md:block" />
           Дальше — 3 простых шага
@@ -60,22 +59,20 @@ export default function HowItWorks() {
           <div className="rounded-2xl overflow-hidden relative aspect-[4/3] w-full shadow-lg">
             <img src={media.step2} alt="Бухгалтер ведёт учёт" loading="lazy" className="object-cover w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 flex items-center justify-center p-8">
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="w-full h-full bg-white/20 backdrop-blur-2xl rounded-[15px] border border-white/30 p-5 flex items-center justify-between shadow-2xl overflow-hidden">
-                <div className="relative w-1/2 h-full flex items-center justify-center">
-                  <div className="relative w-28 h-28 flex items-center justify-center">
-                    <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} className="w-3 h-3 rounded-full bg-gold shadow-[0_0_15px_#D9A93B] z-10" />
-                    {[1, 2, 3, 4].map((i) => (
-                      <motion.div key={i} initial={{ opacity: 0, scale: 0.2 }} animate={{ scale: [0.2, 1.8], opacity: [0, 0.6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeOut', delay: i * 0.9 }} className="absolute border border-white/50 rounded-full w-full h-full" />
-                    ))}
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 items-end">
-                  {['Разнесли', 'Посчитали', 'Проверили'].map((text, i) => (
-                    <motion.div key={text} initial={{ opacity: 0, x: 10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.5 + i * 0.1 }} className={'rounded-[8px] px-4 py-2 shadow-xl border flex items-center justify-center min-w-[90px] ' + (i === 1 ? 'bg-gold border-gold text-night' : 'bg-white border-white text-night')}>
-                      <span className="text-[11px] font-bold tracking-tight leading-none">{text}</span>
-                    </motion.div>
-                  ))}
-                </div>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="w-full bg-white/20 backdrop-blur-2xl rounded-[15px] border border-white/30 p-4 flex flex-col gap-2 shadow-2xl overflow-hidden">
+                {/* Чат с бухгалтером */}
+                {[
+                  { me: true, t: 'Пришло требование из ФНС, что делать?', time: '10:14' },
+                  { me: false, t: 'Вижу. Это сверка по УСН за I кв. Ответ подготовлю сегодня, вам ничего делать не нужно.', time: '10:21' },
+                  { me: false, t: 'Отправила ответ, квитанция о приёме — во вложении ✓', time: '15:40' },
+                ].map((m, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 + i * 0.2 }} className={'flex ' + (m.me ? 'justify-end' : 'justify-start')}>
+                    <div className={'max-w-[85%] rounded-[12px] px-3 py-2 shadow-lg ' + (m.me ? 'bg-gold text-night rounded-br-[4px]' : 'bg-white text-night rounded-bl-[4px]')}>
+                      <p className="text-[10px] leading-snug">{m.t}</p>
+                      <span className={'block text-[8px] mt-1 text-right ' + (m.me ? 'text-night/60' : 'text-gray-400')}>{m.time}</span>
+                    </div>
+                  </motion.div>
+                ))}
               </motion.div>
             </div>
           </div>
