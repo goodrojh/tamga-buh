@@ -108,7 +108,8 @@ function doPost(e) {
       utm_term: String(data.utm_term || ''),
       referrer: String(data.referrer || ''),
       device: String(data.device || ''),
-      id: Utilities.getUuid().slice(0, 8).toUpperCase(),
+      // Номер заявки: берём с сайта (он же показан клиенту на странице «Спасибо»), иначе генерируем
+      id: String(data.id || '').replace(/[^A-Z0-9]/gi, '').slice(0, 12).toUpperCase() || Utilities.getUuid().slice(0, 8).toUpperCase(),
     };
 
     var sheetUrl = saveToSheet_(lead);

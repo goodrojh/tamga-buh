@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { X, Phone } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { TamgaMark } from './TamgaMark'
-import { sendLead } from '@/lib/leads'
+import { sendLead, makeLeadId } from '@/lib/leads'
 import { saveSubmittedLead, THANKS_PATH } from '@/lib/thanks'
 
 export interface LeadOptions {
@@ -114,7 +114,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
     }
     try {
       if (site.formEndpoint) {
-        const { id } = await sendLead({ name, phone, message, topic, source: opts.source })
+        const { id } = await sendLead({ id: makeLeadId(), name, phone, message, topic, source: opts.source })
         goThanks('server', id)
       } else {
         const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
@@ -233,7 +233,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
               className="w-full rounded-full bg-gold hover:bg-gold-light disabled:opacity-50 disabled:cursor-not-allowed text-night font-bold py-4 px-6 text-base transition-all hover:scale-[1.02] active:scale-[0.98] shadow-gold flex items-center justify-center gap-2"
             >
               <Phone className="w-4 h-4" />
-              {state === 'sending' ? 'Отправляем…' : opts.cta ?? DEFAULTS.cta}
+              {state === 'sending' ? 'Отправляем… это займёт до 15 секунд' : opts.cta ?? DEFAULTS.cta}
             </button>
             <p className="text-center text-[12px] text-gray-400">
               Без спама и навязчивых звонков. Или напишите сами:{' '}

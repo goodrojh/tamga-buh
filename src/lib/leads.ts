@@ -53,7 +53,17 @@ function device(): string {
  * Тело — text/plain, чтобы браузер не делал CORS-preflight (Apps Script его не поддерживает).
  * Бросает исключение, если endpoint не настроен или ответил ошибкой.
  */
-export async function sendLead(payload: LeadPayload): Promise<{ id?: string }> {
+/** Короткий номер заявки: генерируем на сайте, чтобы он был одинаковым на странице «Спасибо», в Telegram, письме и таблице */
+export function makeLeadId(): string {
+  const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let s = ''
+  const buf = new Uint8Array(6)
+  crypto.getRandomValues(buf)
+  buf.forEach((b) => { s += a[b % a.length] })
+  return s
+}
+
+export async function sendLead(payload: LeadPayload & { id?: string }): Promise<{ id?: string }> {
   if (!site.formEndpoint) throw new Error('form endpoint not configured')
 
   const body = JSON.stringify({
@@ -75,10 +85,10 @@ export async function sendLead(payload: LeadPayload): Promise<{ id?: string }> {
   // Если сам редирект изредка отдаёт 404 (сбой Google), заявка уже записана и разослана —
   // не считаем это ошибкой, чтобы не заставлять клиента отправлять повторно.
   if (!res.ok) {
-    if (res.redirected) return {}
+    if (res.redirected) return { id: payload.id }
     throw new Error('http ' + res.status)
   }
   const data = (await res.json().catch(() => ({ ok: true }))) as { ok?: boolean; id?: string; error?: string }
   if (data.ok === false) throw new Error(data.error || 'server error')
-  return { id: data.id }
+  return { id: data.id || payload.id }
 }
