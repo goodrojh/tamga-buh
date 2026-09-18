@@ -52,7 +52,7 @@ export default function Footer() {
             <div>
               <h4 className="text-white text-[13px] font-semibold mb-4">Услуги</h4>
               <ul className="space-y-2">
-                {[['Бухгалтерское сопровождение', '#services'], ['Учёт маркетплейсов', '#services'], ['Регистрация ИП и ООО', '#kalmykia'], ['Юридический адрес', '#kalmykia'], ['3-НДФЛ', '#services'], ['Калькулятор', '#calculator']].map(([l, h]) => (
+                {[['Бухгалтерское сопровождение', '#services'], ['Учёт маркетплейсов', '#services'], ['Регистрация ИП и ООО', '#kalmykia'], ['Юридический адрес', '#kalmykia'], ['3-НДФЛ', '#services'], ['Калькулятор', '#calculator'], ['Контакты и карта', '#contacts']].map(([l, h]) => (
                   <li key={l}><a href={h} className="text-white/60 text-[13px] hover:text-white transition-colors">{l}</a></li>
                 ))}
               </ul>

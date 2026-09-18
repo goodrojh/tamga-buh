@@ -9,7 +9,7 @@ export function TamgaMark({ className, variant = 'gold' }: { className?: string;
 /** Полный логотип «ТАМГА офис-центр». light — белая версия для тёмного фона. */
 export function Logo({ light = false, className = '' }: { light?: boolean; className?: string }) {
   return (
-    <a href="#top" className={'flex items-center ' + className} aria-label="ТамгаБух — на главную">
+    <a href={import.meta.env.BASE_URL} className={'flex items-center ' + className} aria-label="ТамгаБух — на главную">
       <img
         src={light ? media.logoWhite : media.logoBlue}
         alt="ТАМГА офис-центр"

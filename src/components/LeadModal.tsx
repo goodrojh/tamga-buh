@@ -1,10 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, Phone, Send, CheckCircle2, MessageCircle } from 'lucide-react'
+import { X, Phone } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { TamgaMark } from './TamgaMark'
-import { MaxIcon } from './MaxIcon'
 import { sendLead } from '@/lib/leads'
+import { saveSubmittedLead, THANKS_PATH } from '@/lib/thanks'
 
 export interface LeadOptions {
   /** Заголовок окна */
@@ -19,6 +19,11 @@ export interface LeadOptions {
   cta?: string
   /** Откуда открыли (для аналитики) */
   source?: string
+  /** Предзаполнить имя и телефон (например, при исправлении заявки) */
+  name?: string
+  phone?: string
+  /** Это исправление ранее отправленной заявки с таким id */
+  correctionOf?: string
 }
 
 interface LeadCtx {
@@ -61,13 +66,13 @@ export function LeadProvider({ children }: { children: React.ReactNode }) {
 }
 
 function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }) {
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
+  const [name, setName] = useState(opts.name ?? '')
+  const [phone, setPhone] = useState(opts.phone ? formatPhone(opts.phone) : '')
   const [message, setMessage] = useState(opts.message ?? '')
   const [agree, setAgree] = useState(true)
   const [company, setCompany] = useState('') // honeypot
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
-  const [sentVia, setSentVia] = useState<'server' | 'messenger'>('messenger')
+
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -97,21 +102,25 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
     e.preventDefault()
     if (!valid) return
     setState('sending')
+    const topic = opts.correctionOf ? `Исправление заявки #${opts.correctionOf}: ${opts.topic ?? ''}`.trim() : opts.topic
+    const goThanks = (via: 'server' | 'messenger', id?: string) => {
+      saveSubmittedLead({ id, name, phone, message, topic, via, correctionOf: opts.correctionOf, at: new Date().toISOString() })
+      location.assign(THANKS_PATH)
+    }
     if (company) {
       // honeypot заполнен — молча «принимаем», чтобы не подсказывать боту
-      setState('done')
+      goThanks('server')
       return
     }
     try {
       if (site.formEndpoint) {
-        await sendLead({ name, phone, message, topic: opts.topic, source: opts.source })
-        setSentVia('server')
+        const { id } = await sendLead({ name, phone, message, topic, source: opts.source })
+        goThanks('server', id)
       } else {
         const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
         window.open(url, '_blank', 'noopener')
-        setSentVia('messenger')
+        goThanks('messenger')
       }
-      setState('done')
     } catch {
       setState('error')
     }
@@ -164,31 +173,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
           )}
         </div>
 
-        {state === 'done' ? (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-steppe/10 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-9 h-9 text-steppe" />
-            </div>
-            <h4 className="font-display font-semibold text-xl mt-5">Заявка принята</h4>
-            <p className="text-gray-500 mt-2 leading-relaxed">
-              {sentVia === 'server'
-                ? 'Перезвоним в рабочее время в течение 15 минут. Если срочно — напишите нам в мессенджер.'
-                : 'Мы открыли мессенджер с готовым сообщением — просто нажмите «Отправить». Если окно не открылось, напишите нам напрямую.'}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 mt-6">
-              <a href={waLink(composeText())} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] text-white font-semibold py-3 px-5">
-                <MessageCircle className="w-4 h-4" /> WhatsApp
-              </a>
-              <a href={tgLink(composeText())} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#2AABEE] text-white font-semibold py-3 px-5">
-                <Send className="w-4 h-4" /> Telegram
-              </a>
-              <a href={site.max} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#5B4BFF] text-white font-semibold py-3 px-5">
-                <MaxIcon className="w-4 h-4" /> MAX
-              </a>
-            </div>
-            <button type="button" onClick={onClose} className="mt-4 text-sm text-gray-400 hover:text-gray-600">Закрыть</button>
-          </div>
-        ) : (
+        {
           <form onSubmit={submit} className="p-6 space-y-4 relative">
             <label className="block">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Как к вам обращаться</span>
@@ -259,7 +244,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
               <a href={site.max} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">MAX</a>
             </p>
           </form>
-        )}
+        }
       </motion.div>
     </motion.div>
   )

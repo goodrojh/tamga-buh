@@ -5,13 +5,14 @@ import { site } from '@/config/site'
 import { useLead } from './LeadModal'
 import { Logo } from './TamgaMark'
 
+const BASE = import.meta.env.BASE_URL
 const NAV = [
-  { label: 'Услуги', href: '#services' },
-  { label: 'Калмыкия 1 %', href: '#kalmykia' },
-  { label: 'Цены', href: '#pricing' },
-  { label: 'Калькулятор', href: '#calculator' },
-  { label: 'О нас', href: '#about' },
-  { label: 'Вопросы', href: '#faq' },
+  { label: 'Услуги', href: BASE + '#services' },
+  { label: 'Калмыкия 1 %', href: BASE + '#kalmykia' },
+  { label: 'Цены', href: BASE + '#pricing' },
+  { label: 'Калькулятор', href: BASE + '#calculator' },
+  { label: 'О нас', href: BASE + '#about' },
+  { label: 'Контакты', href: BASE + '#contacts' },
 ]
 
 /** Фиксированное меню: всегда доступно при скролле, ширина совпадает с контентом секций (max-w-7xl). */

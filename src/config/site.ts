@@ -10,8 +10,18 @@ export const site = {
   telegram: 'korney88_elista',
   max: 'https://max.ru/u/f9LHodD0cOIf0sXOypqB6GPIc2Hb2yQOi_Ls-IAmmGI8Z08hNiJJP9Nhqac',
   email: 'korney88_elista@mail.ru',
-  address: 'Республика Калмыкия, г. Элиста', // TODO: адрес офиса (улица, дом), если нужен на сайте
-  workHours: 'Пн–Пт 9:00–19:00, Сб 10:00–15:00 (МСК)',
+  address: 'Республика Калмыкия, г. Элиста, 9-й микрорайон, 6',
+  workHours: 'Пн–Пт 9:00–18:00',
+  /** Организация на Яндекс Картах */
+  map: {
+    yandexOrgId: '44389550796',
+    lat: 46.302003,
+    lon: 44.303338,
+    rating: '4,6',
+    orgUrl: 'https://yandex.ru/maps/org/44389550796',
+    reviewsUrl: 'https://yandex.ru/maps/org/44389550796/reviews/',
+    routeUrl: 'https://yandex.ru/maps/?rtext=~46.302003,44.303338&rtt=auto',
+  },
   /**
    * Куда отправлять заявки: URL веб-приложения Google Apps Script (см. integrations/README.md).
    * Скрипт кладёт заявку в Google-таблицу, шлёт письмо на e-mail и сообщение в Telegram-бот.

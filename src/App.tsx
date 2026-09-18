@@ -17,12 +17,18 @@ import Cases from '@/sections/Cases'
 import FAQ from '@/sections/FAQ'
 import Blog from '@/sections/Blog'
 import Footer from '@/sections/Footer'
+import Contacts from '@/sections/Contacts'
+import ThankYou from '@/pages/ThankYou'
+import { isThanksPage } from '@/lib/thanks'
 
 export default function App() {
   return (
     <LeadProvider>
       <ArticleProvider>
       <Navbar />
+      {isThanksPage() ? (
+        <ThankYou />
+      ) : (
       <main className="min-h-screen">
         <Hero />
         <Features />
@@ -38,8 +44,10 @@ export default function App() {
         <Cases />
         <FAQ />
         <Blog />
+        <Contacts />
         <Footer />
       </main>
+      )}
       <MobileBar />
       </ArticleProvider>
     </LeadProvider>
