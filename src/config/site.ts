@@ -7,8 +7,8 @@ export const site = {
   phone: '+7 (961) 545-39-19',
   phoneHref: 'tel:+79615453919',
   whatsapp: '79615453919',
-  telegram: 'tamga_buh', // TODO: username без "@", если есть личный/рабочий Telegram
-  max: 'https://max.ru/', // TODO: ссылка на профиль/чат в мессенджере MAX
+  telegram: 'korney88_elista',
+  max: 'https://max.ru/u/f9LHodD0cOIf0sXOypqB6GPIc2Hb2yQOi_Ls-IAmmGI8Z08hNiJJP9Nhqac',
   email: 'korney88_elista@mail.ru',
   address: 'Республика Калмыкия, г. Элиста', // TODO: адрес офиса (улица, дом), если нужен на сайте
   workHours: 'Пн–Пт 9:00–19:00, Сб 10:00–15:00 (МСК)',

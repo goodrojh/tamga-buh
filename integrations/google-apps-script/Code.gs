@@ -9,7 +9,8 @@
  * Настройка — см. integrations/README.md. Секреты хранятся в
  * «Настройки проекта → Свойства скрипта» (Script properties):
  *   TELEGRAM_BOT_TOKEN  — токен бота от @BotFather
- *   TELEGRAM_CHAT_ID    — id чата/группы, куда слать (число, у групп отрицательное)
+ *   TELEGRAM_CHAT_ID    — кому слать: один или несколько chat_id через запятую (например 123456789,987654321)
+ *                         Узнать chat_id: запустить функцию getChatIds() — она покажет всех, кто написал боту.
  *   EMAIL_TO            — куда слать письма (можно несколько через запятую)
  *   SHEET_ID            — (необязательно) id таблицы, если скрипт не привязан к ней
  *   SECRET              — (необязательно) общий секрет; если задан, сайт должен присылать его в поле `secret`
@@ -143,8 +144,8 @@ function digits_(phone) {
 
 function sendTelegram_(lead, sheetUrl) {
   var token = props_().getProperty('TELEGRAM_BOT_TOKEN');
-  var chatId = props_().getProperty('TELEGRAM_CHAT_ID');
-  if (!token || !chatId) return 'not configured';
+  var chatIds = String(props_().getProperty('TELEGRAM_CHAT_ID') || '').split(',').map(function (s) { return s.trim(); }).filter(String);
+  if (!token || !chatIds.length) return 'not configured';
 
   var d = digits_(lead.phone);
   var lines = [
@@ -161,13 +162,47 @@ function sendTelegram_(lead, sheetUrl) {
     '<a href="https://wa.me/' + d + '">Написать в WhatsApp</a>  ·  <a href="' + sheetUrl + '">Открыть в таблице</a>',
   ].filter(function (x) { return x !== null; });
 
-  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
-    method: 'post',
-    contentType: 'application/json',
-    payload: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
-    muteHttpExceptions: true,
+  // Шлём каждому получателю из списка. Бот пишет ТОЛЬКО этим chat_id —
+  // посторонние, нажавшие Start, ничего не получают.
+  var report = chatIds.map(function (chatId) {
+    var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
+      muteHttpExceptions: true,
+    });
+    return chatId + ': ' + (res.getResponseCode() === 200 ? 'sent' : 'http ' + res.getResponseCode() + ' ' + res.getContentText());
   });
-  return res.getResponseCode() === 200 ? 'sent' : 'http ' + res.getResponseCode() + ': ' + res.getContentText();
+  return report.join('; ');
+}
+
+/**
+ * Помощник: показывает chat_id всех, кто писал боту (людей и групп).
+ * Запустить вручную из редактора → смотреть «Журнал выполнения».
+ * Нужные id вписать в свойство TELEGRAM_CHAT_ID (через запятую, если несколько).
+ */
+function getChatIds() {
+  var token = props_().getProperty('TELEGRAM_BOT_TOKEN');
+  if (!token) { Logger.log('Сначала задайте TELEGRAM_BOT_TOKEN в свойствах скрипта'); return; }
+  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/getUpdates', { muteHttpExceptions: true });
+  var data = JSON.parse(res.getContentText());
+  if (!data.ok) { Logger.log('Ошибка Telegram: ' + res.getContentText()); return; }
+  var seen = {};
+  (data.result || []).forEach(function (u) {
+    var m = u.message || u.my_chat_member || u.channel_post;
+    if (!m || !m.chat) return;
+    var c = m.chat;
+    var title = c.title || [c.first_name, c.last_name].filter(String).join(' ') || '';
+    seen[c.id] = (c.type === 'private' ? 'Личный чат' : 'Группа') + ': ' + title + (c.username ? ' (@' + c.username + ')' : '');
+  });
+  var ids = Object.keys(seen);
+  if (!ids.length) {
+    Logger.log('Пока никто не писал боту. Откройте бота в Telegram, нажмите Start, напишите «привет» и запустите снова.');
+    return;
+  }
+  Logger.log('Найдены чаты:');
+  ids.forEach(function (id) { Logger.log('  chat_id = ' + id + '   —   ' + seen[id]); });
+  Logger.log('Впишите нужные chat_id в свойство TELEGRAM_CHAT_ID (несколько — через запятую).');
 }
 
 function sendEmail_(lead, sheetUrl) {
