@@ -116,9 +116,9 @@ export default function ThankYou() {
             {lead ? (
               <dl className="mt-6 divide-y divide-gray-100">
                 {rows.map(([k, v]) => (
-                  <div key={k} className="py-3.5 grid grid-cols-[110px_1fr] gap-3">
+                  <div key={k} className="py-3.5 grid grid-cols-[86px_1fr] sm:grid-cols-[110px_1fr] gap-3">
                     <dt className="text-[13px] text-gray-400 pt-0.5">{k}</dt>
-                    <dd className={'text-[15px] leading-relaxed break-words ' + (k === 'Телефон' ? 'font-display font-semibold text-lg' : 'text-night')}>{v}</dd>
+                    <dd className={'text-[15px] leading-relaxed break-words ' + (k === 'Телефон' ? 'font-display font-semibold text-base sm:text-lg whitespace-nowrap' : 'text-night')}>{v}</dd>
                   </div>
                 ))}
               </dl>
