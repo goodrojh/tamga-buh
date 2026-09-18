@@ -67,11 +67,17 @@ export async function sendLead(payload: LeadPayload): Promise<{ id?: string }> {
 
   const res = await fetch(site.formEndpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'text/plain' },
     body,
     redirect: 'follow',
   })
-  if (!res.ok) throw new Error('http ' + res.status)
+  // Apps Script обрабатывает POST на script.google.com и отвечает редиректом на страницу с результатом.
+  // Если сам редирект изредка отдаёт 404 (сбой Google), заявка уже записана и разослана —
+  // не считаем это ошибкой, чтобы не заставлять клиента отправлять повторно.
+  if (!res.ok) {
+    if (res.redirected) return {}
+    throw new Error('http ' + res.status)
+  }
   const data = (await res.json().catch(() => ({ ok: true }))) as { ok?: boolean; id?: string; error?: string }
   if (data.ok === false) throw new Error(data.error || 'server error')
   return { id: data.id }
