@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { X, Phone } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { TamgaMark } from './TamgaMark'
-import { sendLead, makeLeadId } from '@/lib/leads'
+import { sendLead } from '@/lib/leads'
 import { saveSubmittedLead, THANKS_PATH } from '@/lib/thanks'
 
 export interface LeadOptions {
@@ -22,8 +22,8 @@ export interface LeadOptions {
   /** Предзаполнить имя и телефон (например, при исправлении заявки) */
   name?: string
   phone?: string
-  /** Это исправление ранее отправленной заявки с таким id */
-  correctionOf?: string
+  /** Это исправление ранее отправленной заявки */
+  correction?: boolean
 }
 
 interface LeadCtx {
@@ -102,9 +102,9 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
     e.preventDefault()
     if (!valid) return
     setState('sending')
-    const topic = opts.correctionOf ? `Исправление заявки #${opts.correctionOf}: ${opts.topic ?? ''}`.trim() : opts.topic
-    const goThanks = (via: 'server' | 'messenger', id?: string) => {
-      saveSubmittedLead({ id, name, phone, message, topic, via, correctionOf: opts.correctionOf, at: new Date().toISOString() })
+    const topic = opts.correction ? `Исправление заявки: ${opts.topic ?? ''}`.trim() : opts.topic
+    const goThanks = (via: 'server' | 'messenger') => {
+      saveSubmittedLead({ name, phone, message, topic, via, correction: !!opts.correction, at: new Date().toISOString() })
       location.assign(THANKS_PATH)
     }
     if (company) {
@@ -114,8 +114,8 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
     }
     try {
       if (site.formEndpoint) {
-        const { id } = await sendLead({ id: makeLeadId(), name, phone, message, topic, source: opts.source })
-        goThanks('server', id)
+        await sendLead({ name, phone, message, topic, source: opts.source })
+        goThanks('server')
       } else {
         const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
         window.open(url, '_blank', 'noopener')

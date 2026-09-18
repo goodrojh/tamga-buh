@@ -1,14 +1,13 @@
 /** Данные последней заявки — передаём на страницу «Спасибо» через sessionStorage. */
 export interface SubmittedLead {
-  id?: string
   name: string
   phone: string
   message: string
   topic?: string
   /** Через что ушла заявка: сервер (таблица/почта/Telegram) или мессенджер (резервный режим) */
   via: 'server' | 'messenger'
-  /** Если это исправление предыдущей заявки — её id */
-  correctionOf?: string
+  /** Это исправление предыдущей заявки */
+  correction?: boolean
   at: string
 }
 

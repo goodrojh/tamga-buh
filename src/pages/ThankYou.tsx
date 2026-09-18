@@ -57,7 +57,7 @@ export default function ThankYou() {
       phone: lead?.phone,
       message: lead?.message,
       cta: 'Отправить исправление',
-      correctionOf: lead?.id ?? 'без номера',
+      correction: true,
     })
 
   return (
@@ -80,7 +80,7 @@ export default function ThankYou() {
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }} className="font-display font-semibold text-[34px] sm:text-5xl md:text-[58px] leading-[1.08] tracking-[-0.02em] mt-8">
-            {lead?.correctionOf ? 'Уточнение принято' : 'Заявка принята.'} <br />
+            {lead?.correction ? 'Уточнение принято.' : 'Заявка принята.'} <br />
             <span className="gold-text italic inline-block pr-[0.15em] -mr-[0.15em]">Тамга поставлена</span>
           </motion.h1>
 
@@ -90,10 +90,9 @@ export default function ThankYou() {
             {lead?.via === 'messenger' && ' Если окно мессенджера не открылось — напишите нам любым удобным способом ниже.'}
           </motion.p>
 
-          {lead?.id && (
+          {lead?.at && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="mt-5 inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-[13px] text-white/80">
-              <span className="w-2 h-2 rounded-full bg-gold" /> Номер заявки <span className="font-mono font-semibold text-gold">#{lead.id}</span>
-              {lead.at && <span className="text-white/45">· {fmtDate(lead.at)}</span>}
+              <span className="w-2 h-2 rounded-full bg-gold" /> Отправлено {fmtDate(lead.at)}
             </motion.div>
           )}
         </div>
