@@ -16,6 +16,17 @@
  *   SECRET              — (необязательно) общий секрет; если задан, сайт должен присылать его в поле `secret`
  */
 
+/**
+ * Простой способ настройки: впишите значения прямо сюда.
+ * Если то же свойство задано в «Настройки проекта → Свойства скрипта», приоритет у свойства.
+ */
+var CONFIG = {
+  TELEGRAM_BOT_TOKEN: '',
+  TELEGRAM_CHAT_ID: '',   // один или несколько chat_id через запятую
+  EMAIL_TO: '',
+  SECRET: '',
+};
+
 var SHEET_NAME = 'Заявки';
 var HEADERS = [
   'Дата и время', 'Имя', 'Телефон', 'Тема', 'Комментарий',
@@ -25,6 +36,11 @@ var HEADERS = [
 
 function props_() {
   return PropertiesService.getScriptProperties();
+}
+
+/** Значение настройки: сначала Свойства скрипта, затем CONFIG выше. */
+function cfg_(key) {
+  return props_().getProperty(key) || CONFIG[key] || '';
 }
 
 function getSheet_() {
@@ -68,7 +84,7 @@ function doPost(e) {
     var data = parseBody_(e);
 
     // Секрет (если задан)
-    var secret = props_().getProperty('SECRET');
+    var secret = cfg_('SECRET');
     if (secret && data.secret !== secret) return json_({ ok: false, error: 'forbidden' });
 
     // Honeypot: боты заполняют скрытое поле
@@ -143,8 +159,8 @@ function digits_(phone) {
 }
 
 function sendTelegram_(lead, sheetUrl) {
-  var token = props_().getProperty('TELEGRAM_BOT_TOKEN');
-  var chatIds = String(props_().getProperty('TELEGRAM_CHAT_ID') || '').split(',').map(function (s) { return s.trim(); }).filter(String);
+  var token = cfg_('TELEGRAM_BOT_TOKEN');
+  var chatIds = String(cfg_('TELEGRAM_CHAT_ID') || '').split(',').map(function (s) { return s.trim(); }).filter(String);
   if (!token || !chatIds.length) return 'not configured';
 
   var d = digits_(lead.phone);
@@ -182,8 +198,8 @@ function sendTelegram_(lead, sheetUrl) {
  * Нужные id вписать в свойство TELEGRAM_CHAT_ID (через запятую, если несколько).
  */
 function getChatIds() {
-  var token = props_().getProperty('TELEGRAM_BOT_TOKEN');
-  if (!token) { Logger.log('Сначала задайте TELEGRAM_BOT_TOKEN в свойствах скрипта'); return; }
+  var token = cfg_('TELEGRAM_BOT_TOKEN');
+  if (!token) { Logger.log('Сначала задайте TELEGRAM_BOT_TOKEN (в CONFIG вверху файла или в свойствах скрипта)'); return; }
   var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/getUpdates', { muteHttpExceptions: true });
   var data = JSON.parse(res.getContentText());
   if (!data.ok) { Logger.log('Ошибка Telegram: ' + res.getContentText()); return; }
@@ -206,7 +222,7 @@ function getChatIds() {
 }
 
 function sendEmail_(lead, sheetUrl) {
-  var to = props_().getProperty('EMAIL_TO');
+  var to = cfg_('EMAIL_TO');
   if (!to) return 'not configured';
   var d = digits_(lead.phone);
   var subject = 'Заявка с сайта ТамгаБух: ' + (lead.topic || lead.source || 'звонок') + ' — ' + lead.phone;
