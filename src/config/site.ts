@@ -17,7 +17,7 @@ export const site = {
    * Скрипт кладёт заявку в Google-таблицу, шлёт письмо на e-mail и сообщение в Telegram-бот.
    * Пока пусто — заявка открывает WhatsApp с готовым сообщением (работает без бэкенда).
    */
-  formEndpoint: '',
+  formEndpoint: 'https://script.google.com/macros/s/AKfycby-OsPy5RfSySkmJfHGdsmRXDg0IEPEMnCob3D_6k_B759RearOspZEXSp6zGRxJ18SCg/exec',
   /** Общий секрет (если задан SECRET в свойствах скрипта). Не защита от людей, но отсекает случайные запросы. */
   formSecret: '',
   /** Канал, в который уходит заявка, если formEndpoint пуст или недоступен */
