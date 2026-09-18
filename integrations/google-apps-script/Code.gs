@@ -2,7 +2,7 @@
  * ТамгаБух — приём заявок с сайта.
  *
  * Что делает при каждой заявке (POST с сайта):
- *   1. Записывает строку в Google-таблицу (лист «Заявки») — это ваша мини-CRM.
+ *   1. Записывает строку в Google-таблицу (лист «Заявки») — журнал всех лидов.
  *   2. Отправляет письмо на EMAIL_TO.
  *   3. Отправляет сообщение в Telegram (бот → ваш чат или группу).
  *
@@ -17,11 +17,10 @@
 
 var SHEET_NAME = 'Заявки';
 var HEADERS = [
-  'Дата и время', 'Статус', 'Имя', 'Телефон', 'Тема', 'Комментарий',
+  'Дата и время', 'Имя', 'Телефон', 'Тема', 'Комментарий',
   'Кнопка (источник)', 'Страница', 'UTM source', 'UTM medium', 'UTM campaign', 'UTM content', 'UTM term',
-  'Реферер', 'Устройство', 'ID заявки', 'Комментарий менеджера', 'Дата контакта',
+  'Реферер', 'Устройство', 'ID заявки',
 ];
-var STATUSES = ['Новая', 'В работе', 'Перезвонить', 'Договор', 'Отказ', 'Спам'];
 
 function props_() {
   return PropertiesService.getScriptProperties();
@@ -39,7 +38,7 @@ function getSheet_() {
   return sh;
 }
 
-/** Запустить один раз вручную: создаёт лист, шапку, выпадающий список статусов, закрепляет строку. */
+/** Запустить один раз вручную: создаёт лист, шапку, закрепляет строку. */
 function setup() {
   var sh = getSheet_();
   formatSheet_(sh);
@@ -53,20 +52,9 @@ function formatSheet_(sh) {
   var header = sh.getRange(1, 1, 1, HEADERS.length);
   header.setValues([HEADERS]).setFontWeight('bold').setBackground('#0A1A33').setFontColor('#F0C96A');
   sh.setFrozenRows(1);
-  // Статус — выпадающий список
-  var rule = SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).setAllowInvalid(false).build();
-  sh.getRange(2, 2, 5000, 1).setDataValidation(rule);
   // Ширины колонок
-  var widths = [150, 110, 140, 150, 260, 320, 160, 220, 110, 110, 130, 110, 110, 180, 120, 120, 260, 120];
+  var widths = [150, 140, 150, 260, 320, 160, 220, 110, 110, 130, 110, 110, 180, 120, 100];
   widths.forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
-  // Условное форматирование статусов
-  var range = sh.getRange(2, 2, 5000, 1);
-  var rules = [
-    ['Новая', '#FFF4CC'], ['В работе', '#DCEBFF'], ['Перезвонить', '#FFE0B2'], ['Договор', '#D9F2E1'], ['Отказ', '#F5D5D5'], ['Спам', '#E0E0E0'],
-  ].map(function (p) {
-    return SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(p[0]).setBackground(p[1]).setRanges([range]).build();
-  });
-  sh.setConditionalFormatRules(rules);
 }
 
 /** Health-check: открыть URL веб-приложения в браузере — должно вернуть {"ok":true}. */
@@ -90,7 +78,6 @@ function doPost(e) {
 
     var lead = {
       ts: new Date(),
-      status: 'Новая',
       name: String(data.name || '').trim(),
       phone: phone,
       topic: String(data.topic || '').trim(),
@@ -132,9 +119,9 @@ function saveToSheet_(lead) {
   try {
     var sh = getSheet_();
     sh.appendRow([
-      lead.ts, lead.status, lead.name, "'" + lead.phone, lead.topic, lead.message,
+      lead.ts, lead.name, "'" + lead.phone, lead.topic, lead.message,
       lead.source, lead.page, lead.utm_source, lead.utm_medium, lead.utm_campaign, lead.utm_content, lead.utm_term,
-      lead.referrer, lead.device, lead.id, '', '',
+      lead.referrer, lead.device, lead.id,
     ]);
     var row = sh.getLastRow();
     sh.getRange(row, 1).setNumberFormat('dd.MM.yyyy HH:mm');

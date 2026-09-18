@@ -16,7 +16,7 @@ npm run deploy   # публикация на GitHub Pages (ветка gh-pages)
 ## Что заменить перед запуском
 
 1. **`src/config/site.ts`** — Telegram-username, ссылка на MAX (`site.max`), адрес офиса, соцсети. Телефон, e-mail и реквизиты уже реальные.
-2. **`site.formEndpoint`** — URL веб-приложения Google Apps Script. Полная инструкция (Telegram-бот, Google-таблица как CRM,
+2. **`site.formEndpoint`** — URL веб-приложения Google Apps Script. Полная инструкция (Telegram-бот, Google-таблица с лидами,
    письма на почту): **[integrations/README.md](integrations/README.md)**. Пока пусто — заявка открывает WhatsApp с готовым текстом.
 3. **`src/data/pricing.ts`** — цены сопровождения взяты из прайса (колонка «Будет с учётом изменений»).
    Разовые услуги помечены `estimate: true` — это ориентиры, их нужно подтвердить.
