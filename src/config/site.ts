@@ -1,9 +1,27 @@
 /**
  * Единая точка правды по контактам и интеграциям.
- * TODO (перед запуском): заменить телефон, мессенджеры, адрес и реквизиты на реальные.
  */
 export const site = {
   brand: 'ТАМГАБУХ',
+  tagline: 'Бухгалтерия, за которую отвечаем как за свою',
+  phone: '+7 (961) 545-39-19',
+  phoneHref: 'tel:+79615453919',
+  whatsapp: '79615453919',
+  telegram: 'tamga_buh', // TODO: username без "@", если есть личный/рабочий Telegram
+  max: 'https://max.ru/', // TODO: ссылка на профиль/чат в мессенджере MAX
+  email: 'korney88_elista@mail.ru',
+  address: 'Республика Калмыкия, г. Элиста', // TODO: адрес офиса (улица, дом), если нужен на сайте
+  workHours: 'Пн–Пт 9:00–19:00, Сб 10:00–15:00 (МСК)',
+  /**
+   * Куда отправлять заявки: URL веб-приложения Google Apps Script (см. integrations/README.md).
+   * Скрипт кладёт заявку в Google-таблицу, шлёт письмо на e-mail и сообщение в Telegram-бот.
+   * Пока пусто — заявка открывает WhatsApp с готовым сообщением (работает без бэкенда).
+   */
+  formEndpoint: '',
+  /** Общий секрет (если задан SECRET в свойствах скрипта). Не защита от людей, но отсекает случайные запросы. */
+  formSecret: '',
+  /** Канал, в который уходит заявка, если formEndpoint пуст или недоступен */
+  fallbackChannel: 'whatsapp' as 'whatsapp' | 'telegram',
   /** Владелец / основатель */
   owner: {
     name: 'Корней Надвидов',
@@ -18,27 +36,10 @@ export const site = {
     registered: '2 июня 2026',
     validUntil: '4 февраля 2036',
   },
-  tagline: 'Бухгалтерия, за которую отвечаем как за свою',
-  phone: '+7 (961) 000-00-00', // TODO: реальный номер
-  phoneHref: 'tel:+79610000000',
-  whatsapp: '79610000000', // TODO: номер без "+" для wa.me
-  telegram: 'tamga_buh', // TODO: username без "@"
-  max: 'https://max.ru/', // TODO: ссылка на профиль/чат в мессенджере MAX
-  email: 'info@tamga-buh.ru', // TODO
-  address: 'Республика Калмыкия, г. Элиста', // TODO: улица, офис
-  workHours: 'Пн–Пт 9:00–19:00, Сб 10:00–15:00 (МСК)',
-  /**
-   * Куда отправлять заявки. Варианты:
-   *  1) Formspree / любой endpoint, принимающий JSON POST — укажите URL.
-   *  2) Пусто — заявка уходит в WhatsApp/Telegram готовым сообщением (работает без бэкенда).
-   */
-  formEndpoint: '',
-  /** Основной канал, если formEndpoint пуст */
-  fallbackChannel: 'whatsapp' as 'whatsapp' | 'telegram',
   requisites: {
-    name: 'ООО «ТАМГА»', // TODO
-    inn: '0800000000', // TODO
-    ogrn: '1230800000000', // TODO
+    name: 'ИП Надвидов Корней Мергенович',
+    inn: '081409504874',
+    ogrnip: '320081600002895',
   },
   social: {
     vk: 'https://vk.com/', // TODO

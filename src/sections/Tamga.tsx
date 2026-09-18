@@ -62,7 +62,7 @@ export default function Tamga() {
             <div className="flex-1 text-center sm:text-left">
               <div className="text-[12px] uppercase tracking-[0.15em] text-gray-400">{site.owner.role}</div>
               <div className="font-display font-semibold text-lg text-night mt-1">{site.owner.shortName} ответит на сложный вопрос лично</div>
-              <p className="text-[13px] text-gray-500 mt-1">Требование ФНС, переезд в Калмыкию, НДС на УСН, спор с маркетплейсом — первые 15 минут бесплатно.</p>
+              <p className="text-[13px] text-gray-500 mt-1">Запросы ФНС, переезд в Калмыкию, НДС на УСН, спор с маркетплейсом — первые 15 минут бесплатно.</p>
             </div>
             <button onClick={() => open({ source: 'expert', topic: 'Вопрос руководителю', title: 'Вопрос руководителю', subtitle: 'Опишите ситуацию — перезвоним в течение рабочего дня.', cta: 'Задать вопрос' })} className="rounded-full bg-night text-white font-semibold px-5 py-3 inline-flex items-center gap-2 hover:bg-night-3 transition-colors whitespace-nowrap">
               <MessageCircle className="w-4 h-4 text-gold" /> Задать вопрос

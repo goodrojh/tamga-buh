@@ -1,0 +1,224 @@
+/**
+ * ТамгаБух — приём заявок с сайта.
+ *
+ * Что делает при каждой заявке (POST с сайта):
+ *   1. Записывает строку в Google-таблицу (лист «Заявки») — это ваша мини-CRM.
+ *   2. Отправляет письмо на EMAIL_TO.
+ *   3. Отправляет сообщение в Telegram (бот → ваш чат или группу).
+ *
+ * Настройка — см. integrations/README.md. Секреты хранятся в
+ * «Настройки проекта → Свойства скрипта» (Script properties):
+ *   TELEGRAM_BOT_TOKEN  — токен бота от @BotFather
+ *   TELEGRAM_CHAT_ID    — id чата/группы, куда слать (число, у групп отрицательное)
+ *   EMAIL_TO            — куда слать письма (можно несколько через запятую)
+ *   SHEET_ID            — (необязательно) id таблицы, если скрипт не привязан к ней
+ *   SECRET              — (необязательно) общий секрет; если задан, сайт должен присылать его в поле `secret`
+ */
+
+var SHEET_NAME = 'Заявки';
+var HEADERS = [
+  'Дата и время', 'Статус', 'Имя', 'Телефон', 'Тема', 'Комментарий',
+  'Кнопка (источник)', 'Страница', 'UTM source', 'UTM medium', 'UTM campaign', 'UTM content', 'UTM term',
+  'Реферер', 'Устройство', 'ID заявки', 'Комментарий менеджера', 'Дата контакта',
+];
+var STATUSES = ['Новая', 'В работе', 'Перезвонить', 'Договор', 'Отказ', 'Спам'];
+
+function props_() {
+  return PropertiesService.getScriptProperties();
+}
+
+function getSheet_() {
+  var id = props_().getProperty('SHEET_ID');
+  var ss = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error('Таблица не найдена: привяжите скрипт к таблице или задайте SHEET_ID');
+  var sh = ss.getSheetByName(SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET_NAME);
+    formatSheet_(sh);
+  }
+  return sh;
+}
+
+/** Запустить один раз вручную: создаёт лист, шапку, выпадающий список статусов, закрепляет строку. */
+function setup() {
+  var sh = getSheet_();
+  formatSheet_(sh);
+  Logger.log('Готово. Лист «' + SHEET_NAME + '» настроен.');
+}
+
+function formatSheet_(sh) {
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(HEADERS);
+  }
+  var header = sh.getRange(1, 1, 1, HEADERS.length);
+  header.setValues([HEADERS]).setFontWeight('bold').setBackground('#0A1A33').setFontColor('#F0C96A');
+  sh.setFrozenRows(1);
+  // Статус — выпадающий список
+  var rule = SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).setAllowInvalid(false).build();
+  sh.getRange(2, 2, 5000, 1).setDataValidation(rule);
+  // Ширины колонок
+  var widths = [150, 110, 140, 150, 260, 320, 160, 220, 110, 110, 130, 110, 110, 180, 120, 120, 260, 120];
+  widths.forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  // Условное форматирование статусов
+  var range = sh.getRange(2, 2, 5000, 1);
+  var rules = [
+    ['Новая', '#FFF4CC'], ['В работе', '#DCEBFF'], ['Перезвонить', '#FFE0B2'], ['Договор', '#D9F2E1'], ['Отказ', '#F5D5D5'], ['Спам', '#E0E0E0'],
+  ].map(function (p) {
+    return SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(p[0]).setBackground(p[1]).setRanges([range]).build();
+  });
+  sh.setConditionalFormatRules(rules);
+}
+
+/** Health-check: открыть URL веб-приложения в браузере — должно вернуть {"ok":true}. */
+function doGet() {
+  return json_({ ok: true, service: 'tamga-buh leads' });
+}
+
+function doPost(e) {
+  try {
+    var data = parseBody_(e);
+
+    // Секрет (если задан)
+    var secret = props_().getProperty('SECRET');
+    if (secret && data.secret !== secret) return json_({ ok: false, error: 'forbidden' });
+
+    // Honeypot: боты заполняют скрытое поле
+    if (data.company) return json_({ ok: true, skipped: 'honeypot' });
+
+    var phone = String(data.phone || '').trim();
+    if (!phone) return json_({ ok: false, error: 'phone required' });
+
+    var lead = {
+      ts: new Date(),
+      status: 'Новая',
+      name: String(data.name || '').trim(),
+      phone: phone,
+      topic: String(data.topic || '').trim(),
+      message: String(data.message || '').trim(),
+      source: String(data.source || '').trim(),
+      page: String(data.page || '').trim(),
+      utm_source: String(data.utm_source || ''),
+      utm_medium: String(data.utm_medium || ''),
+      utm_campaign: String(data.utm_campaign || ''),
+      utm_content: String(data.utm_content || ''),
+      utm_term: String(data.utm_term || ''),
+      referrer: String(data.referrer || ''),
+      device: String(data.device || ''),
+      id: Utilities.getUuid().slice(0, 8).toUpperCase(),
+    };
+
+    var sheetUrl = saveToSheet_(lead);
+    var results = { sheet: !!sheetUrl };
+    try { results.telegram = sendTelegram_(lead, sheetUrl); } catch (err) { results.telegram = 'error: ' + err; }
+    try { results.email = sendEmail_(lead, sheetUrl); } catch (err) { results.email = 'error: ' + err; }
+
+    return json_({ ok: true, id: lead.id, results: results });
+  } catch (err) {
+    return json_({ ok: false, error: String(err) });
+  }
+}
+
+function parseBody_(e) {
+  if (!e || !e.postData) return {};
+  var raw = e.postData.contents || '';
+  try { return JSON.parse(raw); } catch (_) {}
+  // fallback: form-urlencoded
+  return e.parameter || {};
+}
+
+function saveToSheet_(lead) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var sh = getSheet_();
+    sh.appendRow([
+      lead.ts, lead.status, lead.name, "'" + lead.phone, lead.topic, lead.message,
+      lead.source, lead.page, lead.utm_source, lead.utm_medium, lead.utm_campaign, lead.utm_content, lead.utm_term,
+      lead.referrer, lead.device, lead.id, '', '',
+    ]);
+    var row = sh.getLastRow();
+    sh.getRange(row, 1).setNumberFormat('dd.MM.yyyy HH:mm');
+    return sh.getParent().getUrl() + '#gid=' + sh.getSheetId() + '&range=A' + row;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function esc_(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function digits_(phone) {
+  var d = String(phone).replace(/\D/g, '');
+  if (d.length === 11 && d[0] === '8') d = '7' + d.slice(1);
+  return d;
+}
+
+function sendTelegram_(lead, sheetUrl) {
+  var token = props_().getProperty('TELEGRAM_BOT_TOKEN');
+  var chatId = props_().getProperty('TELEGRAM_CHAT_ID');
+  if (!token || !chatId) return 'not configured';
+
+  var d = digits_(lead.phone);
+  var lines = [
+    '🟡 <b>Новая заявка с сайта</b>  <code>#' + lead.id + '</code>',
+    '',
+    '👤 <b>Имя:</b> ' + esc_(lead.name || '—'),
+    '📞 <b>Телефон:</b> <a href="tel:+' + d + '">' + esc_(lead.phone) + '</a>',
+    lead.topic ? '📌 <b>Тема:</b> ' + esc_(lead.topic) : null,
+    lead.message ? '💬 <b>Комментарий:</b> ' + esc_(lead.message) : null,
+    '',
+    '🔘 Кнопка: ' + esc_(lead.source || '—') + (lead.utm_source ? '  ·  UTM: ' + esc_(lead.utm_source + '/' + lead.utm_medium + '/' + lead.utm_campaign) : ''),
+    '📱 ' + esc_(lead.device || ''),
+    '',
+    '<a href="https://wa.me/' + d + '">Написать в WhatsApp</a>  ·  <a href="' + sheetUrl + '">Открыть в таблице</a>',
+  ].filter(function (x) { return x !== null; });
+
+  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true }),
+    muteHttpExceptions: true,
+  });
+  return res.getResponseCode() === 200 ? 'sent' : 'http ' + res.getResponseCode() + ': ' + res.getContentText();
+}
+
+function sendEmail_(lead, sheetUrl) {
+  var to = props_().getProperty('EMAIL_TO');
+  if (!to) return 'not configured';
+  var d = digits_(lead.phone);
+  var subject = 'Заявка с сайта ТамгаБух: ' + (lead.topic || lead.source || 'звонок') + ' — ' + lead.phone;
+  var rows = [
+    ['Имя', lead.name || '—'], ['Телефон', lead.phone], ['Тема', lead.topic || '—'], ['Комментарий', lead.message || '—'],
+    ['Кнопка', lead.source || '—'], ['Страница', lead.page || '—'], ['UTM', [lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(String).join(' / ') || '—'],
+    ['Устройство', lead.device || '—'], ['ID', lead.id],
+  ];
+  var html =
+    '<div style="font-family:Arial,sans-serif;font-size:15px;color:#121826">' +
+    '<h2 style="color:#0A1A33;margin:0 0 12px">Новая заявка с сайта</h2>' +
+    '<table cellpadding="6" style="border-collapse:collapse">' +
+    rows.map(function (r) { return '<tr><td style="color:#888;white-space:nowrap">' + esc_(r[0]) + '</td><td><b>' + esc_(r[1]) + '</b></td></tr>'; }).join('') +
+    '</table>' +
+    '<p style="margin-top:16px"><a href="tel:+' + d + '">Позвонить</a> &nbsp;·&nbsp; <a href="https://wa.me/' + d + '">WhatsApp</a> &nbsp;·&nbsp; <a href="' + sheetUrl + '">Открыть в таблице</a></p>' +
+    '</div>';
+  MailApp.sendEmail({ to: to, subject: subject, htmlBody: html, name: 'Сайт ТамгаБух' });
+  return 'sent';
+}
+
+/** Тестовая заявка — запустить вручную из редактора, чтобы проверить таблицу, почту и Telegram. */
+function testLead() {
+  var fake = {
+    postData: {
+      contents: JSON.stringify({
+        name: 'Тест', phone: '+7 (961) 545-39-19', topic: 'Проверка интеграции', message: 'Если вы это видите — всё работает',
+        source: 'testLead()', page: 'https://goodrojh.github.io/tamga-buh/', device: 'Apps Script',
+      }),
+    },
+  };
+  var out = doPost(fake);
+  Logger.log(out.getContent());
+}
+
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}

@@ -4,6 +4,7 @@ import { X, Phone, Send, CheckCircle2, MessageCircle } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { TamgaMark } from './TamgaMark'
 import { MaxIcon } from './MaxIcon'
+import { sendLead } from '@/lib/leads'
 
 export interface LeadOptions {
   /** Заголовок окна */
@@ -64,7 +65,9 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState(opts.message ?? '')
   const [agree, setAgree] = useState(true)
+  const [company, setCompany] = useState('') // honeypot
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [sentVia, setSentVia] = useState<'server' | 'messenger'>('messenger')
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -94,17 +97,19 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
     e.preventDefault()
     if (!valid) return
     setState('sending')
+    if (company) {
+      // honeypot заполнен — молча «принимаем», чтобы не подсказывать боту
+      setState('done')
+      return
+    }
     try {
       if (site.formEndpoint) {
-        const res = await fetch(site.formEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ name, phone, message, topic: opts.topic, source: opts.source, page: location.href }),
-        })
-        if (!res.ok) throw new Error(String(res.status))
+        await sendLead({ name, phone, message, topic: opts.topic, source: opts.source })
+        setSentVia('server')
       } else {
         const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
         window.open(url, '_blank', 'noopener')
+        setSentVia('messenger')
       }
       setState('done')
     } catch {
@@ -166,7 +171,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
             </div>
             <h4 className="font-display font-semibold text-xl mt-5">Заявка принята</h4>
             <p className="text-gray-500 mt-2 leading-relaxed">
-              {site.formEndpoint
+              {sentVia === 'server'
                 ? 'Перезвоним в рабочее время в течение 15 минут. Если срочно — напишите нам в мессенджер.'
                 : 'Мы открыли мессенджер с готовым сообщением — просто нажмите «Отправить». Если окно не открылось, напишите нам напрямую.'}
             </p>
@@ -184,7 +189,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
             <button type="button" onClick={onClose} className="mt-4 text-sm text-gray-400 hover:text-gray-600">Закрыть</button>
           </div>
         ) : (
-          <form onSubmit={submit} className="p-6 space-y-4">
+          <form onSubmit={submit} className="p-6 space-y-4 relative">
             <label className="block">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Как к вам обращаться</span>
               <input
@@ -216,6 +221,13 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
                 className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition resize-none"
               />
             </label>
+            {/* Honeypot: скрыт от людей, боты его заполняют */}
+            <div className="absolute -left-[9999px] top-0 w-px h-px overflow-hidden" aria-hidden>
+              <label>
+                Компания
+                <input tabIndex={-1} autoComplete="off" value={company} onChange={(e) => setCompany(e.target.value)} />
+              </label>
+            </div>
             <label className="flex items-start gap-3 text-xs text-gray-500 leading-relaxed cursor-pointer">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 accent-gold w-4 h-4" />
               <span>
@@ -224,7 +236,11 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
               </span>
             </label>
             {state === 'error' && (
-              <p className="text-sm text-red-600">Не получилось отправить. Позвоните нам: <a className="underline" href={site.phoneHref}>{site.phone}</a></p>
+              <div className="rounded-2xl bg-red-50 border border-red-100 p-3 text-sm text-red-700">
+                Не получилось отправить автоматически. Отправьте заявку одним нажатием:{' '}
+                <a className="font-semibold underline" href={waLink(composeText())} target="_blank" rel="noopener">в WhatsApp</a>
+                {' '}или позвоните <a className="font-semibold underline" href={site.phoneHref}>{site.phone}</a>
+              </div>
             )}
             <button
               type="submit"

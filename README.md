@@ -15,9 +15,9 @@ npm run deploy   # публикация на GitHub Pages (ветка gh-pages)
 
 ## Что заменить перед запуском
 
-1. **`src/config/site.ts`** — телефон, WhatsApp, Telegram, ссылка на MAX (`site.max`), e-mail, адрес, реквизиты, соцсети.
-2. **`site.formEndpoint`** — URL для приёма заявок (Formspree, свой бэкенд, Telegram-бот через прокси).
-   Пока пусто — заявка открывает WhatsApp/Telegram с готовым текстом (работает без бэкенда).
+1. **`src/config/site.ts`** — Telegram-username, ссылка на MAX (`site.max`), адрес офиса, соцсети. Телефон, e-mail и реквизиты уже реальные.
+2. **`site.formEndpoint`** — URL веб-приложения Google Apps Script. Полная инструкция (Telegram-бот, Google-таблица как CRM,
+   письма на почту): **[integrations/README.md](integrations/README.md)**. Пока пусто — заявка открывает WhatsApp с готовым текстом.
 3. **`src/data/pricing.ts`** — цены сопровождения взяты из прайса (колонка «Будет с учётом изменений»).
    Разовые услуги помечены `estimate: true` — это ориентиры, их нужно подтвердить.
 4. **`public/media/`** — сгенерированные фото/видео (Nano Banana Pro, Kling 3.0). Фото владельца (`owner.webp`) и

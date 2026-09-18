@@ -72,7 +72,7 @@ export default function Footer() {
               <ul className="space-y-2 text-[13px] text-white/60">
                 <li>{site.requisites.name}</li>
                 <li>ИНН {site.requisites.inn}</li>
-                <li>ОГРН {site.requisites.ogrn}</li>
+                <li>ОГРНИП {site.requisites.ogrnip}</li>
                 <li><a href="#about" className="hover:text-white">Товарный знак «{site.trademark.name}» зарегистрирован</a></li>
                 <li><a id="policy" href="#policy" className="hover:text-white underline decoration-white/20">Политика конфиденциальности</a></li>
               </ul>
