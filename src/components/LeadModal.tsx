@@ -5,6 +5,7 @@ import { site, waLink, tgLink } from '@/config/site'
 import { TamgaMark } from './TamgaMark'
 import { sendLead } from '@/lib/leads'
 import { saveSubmittedLead, THANKS_PATH } from '@/lib/thanks'
+import { reachGoal } from '@/lib/analytics'
 
 export interface LeadOptions {
   /** Заголовок окна */
@@ -104,6 +105,7 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
     setState('sending')
     const topic = opts.correction ? `Исправление заявки: ${opts.topic ?? ''}`.trim() : opts.topic
     const goThanks = (via: 'server' | 'messenger') => {
+      reachGoal(opts.correction ? 'lead_correction' : 'lead', { topic, source: opts.source, via })
       saveSubmittedLead({ name, phone, message, topic, via, correction: !!opts.correction, at: new Date().toISOString() })
       location.assign(THANKS_PATH)
     }
