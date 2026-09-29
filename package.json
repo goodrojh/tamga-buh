@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/postbuild.mjs",
+    "build:domain": "tsc -b && vite build --base=/ --outDir dist-domain && node scripts/postbuild.mjs dist-domain",
     "lint": "oxlint",
     "preview": "vite preview",
     "predeploy": "npm run build",
