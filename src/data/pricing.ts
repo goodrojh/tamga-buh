@@ -62,7 +62,8 @@ const osno: Record<Entity, Record<Workers, number>> = {
 }
 
 export const EXTRA_SHOP = 1500 // за каждый магазин сверх 5
-export const NDS20_EXTRA = { min: 3000, max: 5000 } // если выбрана ставка НДС 20 %
+/** Доплата, если выбрана общая ставка НДС 22 % с вычетами (вместо 5 % / 7 % без вычетов) */
+export const NDS_FULL_EXTRA = { min: 3000, max: 5000 }
 
 export interface CalcInput {
   entity: Entity
@@ -71,7 +72,8 @@ export interface CalcInput {
   workers: Workers
   shops: Shops
   extraShops: number // сколько магазинов сверх 5
-  nds20: boolean
+  /** Общая ставка НДС 22 % с вычетами (иначе 5 % / 7 % без вычетов) */
+  ndsFull: boolean
 }
 
 export interface CalcResult {
@@ -117,10 +119,10 @@ export function calculate(i: CalcInput): CalcResult {
       break
     case 'usn_nds':
       price = withShops(i.entity === 'ip' ? usnNdsIp : usnNdsOoo)
-      if (i.nds20) {
-        price += NDS20_EXTRA.min
-        breakdown.push(`+ НДС 20 %: от ${fmt(NDS20_EXTRA.min)} до ${fmt(NDS20_EXTRA.max)} ₽`)
-        note = 'При НДС 20 % итог уточняется после разбора оборотов'
+      if (i.ndsFull) {
+        price += NDS_FULL_EXTRA.min
+        breakdown.push(`+ НДС 22 %: от ${fmt(NDS_FULL_EXTRA.min)} до ${fmt(NDS_FULL_EXTRA.max)} ₽`)
+        note = 'При НДС 22 % итог уточняется после разбора оборотов'
       }
       break
     case 'osno':
@@ -142,7 +144,7 @@ export function describeInput(i: CalcInput): string {
   if (i.regime === 'usn' || i.regime === 'usn_nds') {
     parts.push(`маркетплейсы: ${SHOPS_LABEL[i.shops].toLowerCase()}${i.shops === 'gt5' && i.extraShops ? ` (+${i.extraShops})` : ''}`)
   }
-  if (i.regime === 'usn_nds') parts.push(i.nds20 ? 'НДС 20 %' : 'НДС 5/7 %')
+  if (i.regime === 'usn_nds') parts.push(i.ndsFull ? 'НДС 22 %' : 'НДС 5/7 %')
   return parts.join(', ')
 }
 

@@ -54,15 +54,15 @@ export default function Calculator() {
   const [workers, setWorkers] = useState<Workers>('0')
   const [shops, setShops] = useState<Shops>('none')
   const [extraShops, setExtraShops] = useState(1)
-  const [nds20, setNds20] = useState(false)
+  const [ndsFull, setNdsFull] = useState(false)
 
   const changeEntity = (e: Entity) => {
     setEntity(e)
     if (!REGIMES_FOR[e].includes(regime)) setRegime('usn')
   }
 
-  const input: CalcInput = { entity, regime, obj, workers, shops, extraShops, nds20 }
-  const result = useMemo(() => calculate(input), [entity, regime, obj, workers, shops, extraShops, nds20]) // eslint-disable-line react-hooks/exhaustive-deps
+  const input: CalcInput = { entity, regime, obj, workers, shops, extraShops, ndsFull }
+  const result = useMemo(() => calculate(input), [entity, regime, obj, workers, shops, extraShops, ndsFull]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const showObj = regime === 'usn' || regime === 'usn_nds' || regime === 'ausn'
   const showShops = regime === 'usn' || regime === 'usn_nds'
@@ -104,7 +104,7 @@ export default function Calculator() {
             <AnimatePresence initial={false}>
               {regime === 'usn_nds' && (
                 <motion.div key="nds" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                  <Chips label="Ставка НДС" value={nds20 ? '20' : '5'} options={['5', '20']} labels={{ '5': '5 % / 7 % без вычетов', '20': '20 % с вычетами' }} onChange={(v) => setNds20(v === '20')} />
+                  <Chips label="Ставка НДС" value={ndsFull ? '22' : '5'} options={['5', '22']} labels={{ '5': '5 % / 7 % без вычетов', '22': '22 % с вычетами' }} onChange={(v) => setNdsFull(v === '22')} />
                 </motion.div>
               )}
             </AnimatePresence>

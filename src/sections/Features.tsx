@@ -53,7 +53,7 @@ export default function Features() {
           </div>
           <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
             {[
-              { icon: FileCheck2, t: 'Налоги и отчёты', d: 'УСН, ПСН, АвтоУСН, ОСНО, НДС 5/7/20 %. Все формы в ФНС и СФР.' },
+              { icon: FileCheck2, t: 'Налоги и отчёты', d: 'УСН, ПСН, АвтоУСН, ОСНО, НДС 5/7/22 %. Все формы в ФНС и СФР.' },
               { icon: ShoppingBag, t: 'Маркетплейсы', d: 'Сверка отчётов WB, Ozon, Яндекс Маркет. Комиссии, возвраты, логистика — в учёте.' },
             ].map(({ icon: Icon, t, d }) => (
               <div key={t} className="flex flex-col gap-3 p-5 rounded-[24px] glass hover:bg-white/20 transition-all group/item shadow-xl">
