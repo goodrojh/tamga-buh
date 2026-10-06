@@ -1,4 +1,5 @@
 import { site } from '@/config/site'
+import { getAttribution } from './attribution'
 
 export interface LeadPayload {
   name: string
@@ -8,37 +9,6 @@ export interface LeadPayload {
   source?: string
   /** honeypot — реальный пользователь его не заполняет */
   company?: string
-}
-
-const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const
-const UTM_STORAGE = 'tamga_utm'
-
-/** Запоминаем UTM первого визита, чтобы они дошли до заявки, даже если пользователь походил по сайту */
-export function captureUtm() {
-  try {
-    const params = new URLSearchParams(location.search)
-    const found: Record<string, string> = {}
-    UTM_KEYS.forEach((k) => {
-      const v = params.get(k)
-      if (v) found[k] = v
-    })
-    if (Object.keys(found).length) {
-      found.referrer = document.referrer
-      sessionStorage.setItem(UTM_STORAGE, JSON.stringify(found))
-    } else if (!sessionStorage.getItem(UTM_STORAGE) && document.referrer) {
-      sessionStorage.setItem(UTM_STORAGE, JSON.stringify({ referrer: document.referrer }))
-    }
-  } catch {
-    /* sessionStorage недоступен — не критично */
-  }
-}
-
-function readUtm(): Record<string, string> {
-  try {
-    return JSON.parse(sessionStorage.getItem(UTM_STORAGE) || '{}')
-  } catch {
-    return {}
-  }
 }
 
 function device(): string {
@@ -58,7 +28,7 @@ export async function sendLead(payload: LeadPayload): Promise<void> {
 
   const body = JSON.stringify({
     ...payload,
-    ...readUtm(),
+    ...getAttribution(),
     secret: site.formSecret || undefined,
     page: location.href,
     device: device(),

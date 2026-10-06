@@ -28,10 +28,14 @@ var CONFIG = {
 };
 
 var SHEET_NAME = 'Заявки';
+// Порядок колонок. Скрипт раскладывает значения ПО НАЗВАНИЮ колонки,
+// поэтому колонки в таблице можно переставлять и прятать — ничего не сломается.
 var HEADERS = [
   'Дата и время', 'Имя', 'Телефон', 'Тема', 'Комментарий',
-  'Кнопка (источник)', 'Страница', 'UTM source', 'UTM medium', 'UTM campaign', 'UTM content', 'UTM term',
-  'Реферер', 'Устройство', 'ID заявки',
+  'Источник', 'Кнопка на сайте',
+  'UTM source', 'UTM medium', 'UTM campaign', 'UTM content', 'UTM term',
+  'Клик (yclid/gclid)', 'Страница заявки', 'Страница входа', 'Первый визит', 'Реферер',
+  'Устройство', 'ID заявки',
 ];
 
 function props_() {
@@ -63,15 +67,43 @@ function setup() {
 }
 
 function formatSheet_(sh) {
+  ensureHeaders_(sh);
+  var last = sh.getLastColumn();
+  sh.getRange(1, 1, 1, last).setFontWeight('bold').setBackground('#0A1A33').setFontColor('#F0C96A');
+  sh.setFrozenRows(1);
+  var widths = {
+    'Дата и время': 150, 'Имя': 140, 'Телефон': 150, 'Тема': 260, 'Комментарий': 320,
+    'Источник': 180, 'Кнопка на сайте': 150,
+    'UTM source': 120, 'UTM medium': 110, 'UTM campaign': 140, 'UTM content': 120, 'UTM term': 120,
+    'Клик (yclid/gclid)': 160, 'Страница заявки': 220, 'Страница входа': 220, 'Первый визит': 140,
+    'Реферер': 180, 'Устройство': 130, 'ID заявки': 100,
+  };
+  var header = sh.getRange(1, 1, 1, last).getValues()[0];
+  header.forEach(function (h, i) { if (widths[h]) sh.setColumnWidth(i + 1, widths[h]); });
+}
+
+/**
+ * Приводит шапку к нужному виду: недостающие колонки вставляются на свои места,
+ * существующие остаются там, где их поставили вы (данные под ними не съезжают).
+ */
+function ensureHeaders_(sh) {
   if (sh.getLastRow() === 0) {
     sh.appendRow(HEADERS);
+    return;
   }
-  var header = sh.getRange(1, 1, 1, HEADERS.length);
-  header.setValues([HEADERS]).setFontWeight('bold').setBackground('#0A1A33').setFontColor('#F0C96A');
-  sh.setFrozenRows(1);
-  // Ширины колонок
-  var widths = [150, 140, 150, 260, 320, 160, 220, 110, 110, 130, 110, 110, 180, 120, 100];
-  widths.forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  for (var i = 0; i < HEADERS.length; i++) {
+    var name = HEADERS[i];
+    var header = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0];
+    if (header.indexOf(name) !== -1) continue;
+    var pos = Math.min(i + 1, header.length + 1);
+    if (pos <= header.length) {
+      sh.insertColumnBefore(pos);
+    } else {
+      sh.insertColumnAfter(header.length);
+      pos = header.length + 1;
+    }
+    sh.getRange(1, pos).setValue(name);
+  }
 }
 
 /** Health-check: открыть URL веб-приложения в браузере — должно вернуть {"ok":true}. */
@@ -106,6 +138,10 @@ function doPost(e) {
       utm_campaign: String(data.utm_campaign || ''),
       utm_content: String(data.utm_content || ''),
       utm_term: String(data.utm_term || ''),
+      sourceLabel: String(data.sourceLabel || 'Прямой заход'),
+      clickId: String(data.clickId || ''),
+      landing: String(data.landing || ''),
+      firstVisit: data.firstVisit ? new Date(data.firstVisit) : '',
       referrer: String(data.referrer || ''),
       device: String(data.device || ''),
       id: Utilities.getUuid().slice(0, 8).toUpperCase(),
@@ -135,14 +171,41 @@ function saveToSheet_(lead) {
   lock.waitLock(10000);
   try {
     var sh = getSheet_();
-    sh.appendRow([
-      lead.ts, lead.name, "'" + lead.phone, lead.topic, lead.message,
-      lead.source, lead.page, lead.utm_source, lead.utm_medium, lead.utm_campaign, lead.utm_content, lead.utm_term,
-      lead.referrer, lead.device, lead.id,
-    ]);
-    var row = sh.getLastRow();
-    sh.getRange(row, 1).setNumberFormat('dd.MM.yyyy HH:mm');
-    return sh.getParent().getUrl() + '#gid=' + sh.getSheetId() + '&range=A' + row;
+    ensureHeaders_(sh);
+    var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+
+    var values = {
+      'Дата и время': lead.ts,
+      'Имя': lead.name,
+      'Телефон': "'" + lead.phone,       // апостроф — чтобы Таблицы не съели «+»
+      'Тема': lead.topic,
+      'Комментарий': lead.message,
+      'Источник': lead.sourceLabel,
+      'Кнопка на сайте': lead.source,
+      'UTM source': lead.utm_source,
+      'UTM medium': lead.utm_medium,
+      'UTM campaign': lead.utm_campaign,
+      'UTM content': lead.utm_content,
+      'UTM term': lead.utm_term,
+      'Клик (yclid/gclid)': lead.clickId,
+      'Страница заявки': lead.page,
+      'Страница входа': lead.landing,
+      'Первый визит': lead.firstVisit,
+      'Реферер': lead.referrer,
+      'Устройство': lead.device,
+      'ID заявки': lead.id,
+    };
+
+    var row = header.map(function (h) { return values[h] !== undefined ? values[h] : ''; });
+    sh.appendRow(row);
+
+    var r = sh.getLastRow();
+    var dateCol = header.indexOf('Дата и время') + 1;
+    if (dateCol > 0) sh.getRange(r, dateCol).setNumberFormat('dd.MM.yyyy HH:mm');
+    var firstCol = header.indexOf('Первый визит') + 1;
+    if (firstCol > 0) sh.getRange(r, firstCol).setNumberFormat('dd.MM.yyyy HH:mm');
+
+    return sh.getParent().getUrl() + '#gid=' + sh.getSheetId() + '&range=A' + r;
   } finally {
     lock.releaseLock();
   }
@@ -172,7 +235,8 @@ function sendTelegram_(lead, sheetUrl) {
     lead.topic ? '📌 <b>Тема:</b> ' + esc_(lead.topic) : null,
     lead.message ? '💬 <b>Комментарий:</b> ' + esc_(lead.message) : null,
     '',
-    '🔘 Кнопка: ' + esc_(lead.source || '—') + (lead.utm_source ? '  ·  UTM: ' + esc_(lead.utm_source + '/' + lead.utm_medium + '/' + lead.utm_campaign) : ''),
+    '📈 <b>Источник:</b> ' + esc_(lead.sourceLabel || '—') + (lead.utm_campaign ? '  ·  кампания: ' + esc_(lead.utm_campaign) : ''),
+    '🔘 Кнопка: ' + esc_(lead.source || '—'),
     '📱 ' + esc_(lead.device || ''),
     '',
     '<a href="https://wa.me/' + d + '">Написать в WhatsApp</a>  ·  <a href="' + sheetUrl + '">Открыть в таблице</a>',
@@ -228,7 +292,8 @@ function sendEmail_(lead, sheetUrl) {
   var subject = 'Заявка с сайта ТамгаБух: ' + (lead.topic || lead.source || 'звонок') + ' — ' + lead.phone;
   var rows = [
     ['Имя', lead.name || '—'], ['Телефон', lead.phone], ['Тема', lead.topic || '—'], ['Комментарий', lead.message || '—'],
-    ['Кнопка', lead.source || '—'], ['Страница', lead.page || '—'], ['UTM', [lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(String).join(' / ') || '—'],
+    ['Источник', lead.sourceLabel || '—'], ['Кнопка', lead.source || '—'], ['Страница', lead.page || '—'],
+    ['UTM', [lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(String).join(' / ') || '—'],
     ['Устройство', lead.device || '—'], ['ID', lead.id],
   ];
   var html =
@@ -250,6 +315,8 @@ function testLead() {
       contents: JSON.stringify({
         name: 'Тест', phone: '+7 (961) 545-39-19', topic: 'Проверка интеграции', message: 'Если вы это видите — всё работает',
         source: 'testLead()', page: 'https://goodrojh.github.io/tamga-buh/', device: 'Apps Script',
+        sourceLabel: 'Проверка из редактора', utm_source: 'test', utm_medium: 'manual', utm_campaign: 'proverka',
+        landing: 'https://goodrojh.github.io/tamga-buh/', firstVisit: new Date().toISOString(),
       }),
     },
   };
