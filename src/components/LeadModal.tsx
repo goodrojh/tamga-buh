@@ -41,15 +41,17 @@ const DEFAULTS: Required<Pick<LeadOptions, 'title' | 'subtitle' | 'cta'>> = {
   cta: 'Жду звонка',
 }
 
-function formatPhone(v: string) {
-  const d = v.replace(/\D/g, '').replace(/^8/, '7').slice(0, 11)
-  if (!d) return ''
-  let out = '+7'
-  if (d.length > 1) out += ' (' + d.slice(1, 4)
-  if (d.length >= 4) out += ') ' + d.slice(4, 7)
-  if (d.length >= 7) out += '-' + d.slice(7, 9)
-  if (d.length >= 9) out += '-' + d.slice(9, 11)
-  return out
+function normalizePhone(value: string) {
+  const input = value.trim()
+  if (!/^\+?[\d\s()-]+$/.test(input)) return null
+
+  const digits = input.replace(/\D/g, '')
+  const local = digits.length === 10 && !input.startsWith('+')
+    ? digits
+    : /^(?:7|8)\d{10}$/.test(digits) ? digits.slice(1) : null
+  if (!local) return null
+
+  return `+7 (${local.slice(0, 3)}) ${local.slice(3, 6)}-${local.slice(6, 8)}-${local.slice(8)}`
 }
 
 export function LeadProvider({ children }: { children: React.ReactNode }) {
@@ -132,22 +134,22 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
 
 export function LeadForm({ opts, compact = false }: { opts: LeadOptions; compact?: boolean }) {
   const [name, setName] = useState(opts.name ?? '')
-  const [phone, setPhone] = useState(opts.phone ? formatPhone(opts.phone) : '')
+  const [phone, setPhone] = useState(opts.phone ?? '')
   const [message, setMessage] = useState(opts.message ?? '')
   const [agree, setAgree] = useState(!compact)
   const [company, setCompany] = useState('') // honeypot
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
 
 
-  const digits = phone.replace(/\D/g, '')
-  const valid = digits.length === 11 && agree && (!compact || !!name.trim())
+  const normalizedPhone = normalizePhone(phone)
+  const valid = !!normalizedPhone && agree && (!compact || !!name.trim())
 
   const composeText = () =>
     [
       `Заявка с сайта ${site.brand}`,
       opts.topic ? `Тема: ${opts.topic}` : null,
       name ? `Имя: ${name}` : null,
-      `Телефон: ${phone}`,
+      `Телефон: ${normalizedPhone ?? phone}`,
       message ? `Комментарий: ${message}` : null,
     ]
       .filter(Boolean)
@@ -155,12 +157,12 @@ export function LeadForm({ opts, compact = false }: { opts: LeadOptions; compact
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!valid || state === 'sending') return
+    if (!valid || !normalizedPhone || state === 'sending') return
     setState('sending')
     const topic = opts.correction ? `Исправление заявки: ${opts.topic ?? ''}`.trim() : opts.topic
     const goThanks = (via: 'server' | 'messenger') => {
       reachGoal(opts.correction ? 'lead_correction' : 'lead', { topic, source: opts.source, via })
-      saveSubmittedLead({ name, phone, message, topic, via, correction: !!opts.correction, at: new Date().toISOString() })
+      saveSubmittedLead({ name, phone: normalizedPhone, message, topic, via, correction: !!opts.correction, at: new Date().toISOString() })
       location.assign(THANKS_PATH)
     }
     if (company) {
@@ -170,7 +172,7 @@ export function LeadForm({ opts, compact = false }: { opts: LeadOptions; compact
     }
     try {
       if (site.formEndpoint) {
-        await sendLead({ name, phone, message, topic, source: opts.source })
+        await sendLead({ name, phone: normalizedPhone, message, topic, source: opts.source })
         goThanks('server')
       } else {
         const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
@@ -200,11 +202,12 @@ export function LeadForm({ opts, compact = false }: { opts: LeadOptions; compact
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Телефон *</span>
         <input
           value={phone}
-          onChange={(e) => setPhone(formatPhone(e.target.value))}
+          onChange={(e) => setPhone(e.target.value)}
+          type="tel"
           inputMode="tel"
           autoComplete="tel"
           required
-          placeholder="+7 (___) ___-__-__"
+          placeholder="+7 999 123-45-67"
           className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition"
         />
       </label>
