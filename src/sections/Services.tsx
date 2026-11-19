@@ -5,17 +5,29 @@ const scope = [
   {
     icon: Calculator,
     title: 'Бухгалтерия и налоги',
-    description: 'Ведём учёт, проверяем первичные документы, рассчитываем налоги и сообщаем, сколько и когда платить.',
+    items: [
+      'Отражаем операции по банку, продажам и закупкам.',
+      'Проверяем первичные документы и сообщаем, каких не хватает.',
+      'Рассчитываем налоги и заранее сообщаем суммы и сроки уплаты.',
+    ],
   },
   {
     icon: Users,
     title: 'Зарплата и кадры',
-    description: 'Начисляем зарплату, НДФЛ и взносы. Оформляем приём, увольнение, отпуска и больничные.',
+    items: [
+      'Рассчитываем зарплату, отпускные и выплаты при увольнении.',
+      'Учитываем больничные, рассчитываем НДФЛ и взносы.',
+      'Готовим кадровые документы по приёму, отпуску и увольнению.',
+    ],
   },
   {
     icon: FileCheck2,
     title: 'Отчётность и запросы ФНС',
-    description: 'Ведём календарь сроков, готовим и сдаём отчётность, помогаем отвечать на запросы налоговой.',
+    items: [
+      'Следим за сроками и сдаём отчётность по бизнесу и сотрудникам.',
+      'Передаём квитанции о приёме отчётности.',
+      'Разбираем запросы ФНС и согласуем, какие документы нужны для ответа.',
+    ],
   },
 ]
 
@@ -35,15 +47,32 @@ export default function Services() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3 md:gap-6">
-          {scope.map(({ icon: Icon, title, description }) => (
+          {scope.map(({ icon: Icon, title, items }) => (
             <article key={title} className="rounded-[28px] border border-gray-200 bg-white p-6 md:p-8">
               <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-sand text-night">
                 <Icon className="h-6 w-6" aria-hidden="true" />
               </div>
               <h3 className="font-display text-lg font-semibold text-night">{title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600 md:text-base">{description}</p>
+              <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-gray-600 marker:text-gold-dark md:text-base">
+                {items.map((item) => <li key={item}>{item}</li>)}
+              </ul>
             </article>
           ))}
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2 md:gap-6">
+          <div className="rounded-[28px] border border-gray-200 bg-white p-6 md:p-8">
+            <h3 className="font-display text-lg font-semibold text-night">Что понадобится от вас</h3>
+            <p className="mt-3 text-sm leading-relaxed text-gray-600 md:text-base">
+              Передавайте документы по операциям и сообщайте об изменениях по сотрудникам. На старте договоримся, куда присылать документы, кто подтверждает платежи и в какие дни нужны данные для расчёта зарплаты.
+            </p>
+          </div>
+          <div className="rounded-[28px] border border-gray-200 bg-white p-6 md:p-8">
+            <h3 className="font-display text-lg font-semibold text-night">Что согласуем до договора</h3>
+            <p className="mt-3 text-sm leading-relaxed text-gray-600 md:text-base">
+              Обсудим перечень работ, сроки передачи документов, стоимость в месяц и ответственность сторон. Если потребуется разобрать учёт за прошлые периоды, согласуем объём и цену этой работы отдельно.
+            </p>
+          </div>
         </div>
 
         <div className="mt-6 flex flex-col gap-5 rounded-[28px] bg-night p-6 text-white md:flex-row md:items-center md:justify-between md:p-8">
