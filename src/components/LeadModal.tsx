@@ -37,7 +37,7 @@ export const useLead = () => useContext(Ctx)
 
 const DEFAULTS: Required<Pick<LeadOptions, 'title' | 'subtitle' | 'cta'>> = {
   title: 'Перезвоним за 15 минут',
-  subtitle: 'Оставьте номер — бухгалтер, а не менеджер, ответит на вопросы и назовёт точную цену.',
+  subtitle: 'Оставьте номер, чтобы обсудить ежемесячное ведение бухгалтерии для ИП или ООО с сотрудниками.',
   cta: 'Жду звонка',
 }
 
@@ -67,14 +67,6 @@ export function LeadProvider({ children }: { children: React.ReactNode }) {
 }
 
 function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }) {
-  const [name, setName] = useState(opts.name ?? '')
-  const [phone, setPhone] = useState(opts.phone ? formatPhone(opts.phone) : '')
-  const [message, setMessage] = useState(opts.message ?? '')
-  const [agree, setAgree] = useState(true)
-  const [company, setCompany] = useState('') // honeypot
-  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
-
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     document.addEventListener('keydown', onKey)
@@ -84,49 +76,6 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
       document.body.style.overflow = ''
     }
   }, [onClose])
-
-  const digits = phone.replace(/\D/g, '')
-  const valid = digits.length === 11 && agree
-
-  const composeText = () =>
-    [
-      `Заявка с сайта ${site.brand}`,
-      opts.topic ? `Тема: ${opts.topic}` : null,
-      name ? `Имя: ${name}` : null,
-      `Телефон: ${phone}`,
-      message ? `Комментарий: ${message}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n')
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!valid) return
-    setState('sending')
-    const topic = opts.correction ? `Исправление заявки: ${opts.topic ?? ''}`.trim() : opts.topic
-    const goThanks = (via: 'server' | 'messenger') => {
-      reachGoal(opts.correction ? 'lead_correction' : 'lead', { topic, source: opts.source, via })
-      saveSubmittedLead({ name, phone, message, topic, via, correction: !!opts.correction, at: new Date().toISOString() })
-      location.assign(THANKS_PATH)
-    }
-    if (company) {
-      // honeypot заполнен — молча «принимаем», чтобы не подсказывать боту
-      goThanks('server')
-      return
-    }
-    try {
-      if (site.formEndpoint) {
-        await sendLead({ name, phone, message, topic, source: opts.source })
-        goThanks('server')
-      } else {
-        const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
-        window.open(url, '_blank', 'noopener')
-        goThanks('messenger')
-      }
-    } catch {
-      setState('error')
-    }
-  }
 
   return (
     <motion.div
@@ -175,79 +124,140 @@ function LeadModal({ opts, onClose }: { opts: LeadOptions; onClose: () => void }
           )}
         </div>
 
-        {
-          <form onSubmit={submit} className="p-6 space-y-4 relative">
-            <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Как к вам обращаться</span>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Имя"
-                className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Телефон *</span>
-              <input
-                value={phone}
-                onChange={(e) => setPhone(formatPhone(e.target.value))}
-                inputMode="tel"
-                autoComplete="tel"
-                required
-                placeholder="+7 (___) ___-__-__"
-                className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Комментарий</span>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={3}
-                placeholder="Коротко о бизнесе: ИП или ООО, режим налога, есть ли сотрудники и маркетплейсы"
-                className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition resize-none"
-              />
-            </label>
-            {/* Honeypot: скрыт от людей, боты его заполняют */}
-            <div className="absolute -left-[9999px] top-0 w-px h-px overflow-hidden" aria-hidden>
-              <label>
-                Компания
-                <input tabIndex={-1} autoComplete="off" value={company} onChange={(e) => setCompany(e.target.value)} />
-              </label>
-            </div>
-            <label className="flex items-start gap-3 text-xs text-gray-500 leading-relaxed cursor-pointer">
-              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 accent-gold w-4 h-4" />
-              <span>
-                Согласен(на) на обработку персональных данных согласно{' '}
-                <a href="#policy" className="underline decoration-gold/50 hover:text-ink">политике конфиденциальности</a>
-              </span>
-            </label>
-            {state === 'error' && (
-              <div className="rounded-2xl bg-red-50 border border-red-100 p-3 text-sm text-red-700">
-                Не получилось отправить автоматически. Отправьте заявку одним нажатием:{' '}
-                <a className="font-semibold underline" href={waLink(composeText())} target="_blank" rel="noopener">в WhatsApp</a>
-                {' '}или позвоните <a className="font-semibold underline" href={site.phoneHref}>{site.phone}</a>
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={!valid || state === 'sending'}
-              className="w-full rounded-full bg-gold hover:bg-gold-light disabled:opacity-50 disabled:cursor-not-allowed text-night font-bold py-4 px-6 text-base transition-all hover:scale-[1.02] active:scale-[0.98] shadow-gold flex items-center justify-center gap-2"
-            >
-              <Phone className="w-4 h-4" />
-              {state === 'sending' ? 'Отправляем… это займёт до 15 секунд' : opts.cta ?? DEFAULTS.cta}
-            </button>
-            <p className="text-center text-[12px] text-gray-400">
-              Без спама и навязчивых звонков. Или напишите сами:{' '}
-              <a href={waLink()} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">WhatsApp</a>
-              {' · '}
-              <a href={tgLink()} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">Telegram</a>
-              {' · '}
-              <a href={site.max} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">MAX</a>
-            </p>
-          </form>
-        }
+        <LeadForm opts={opts} />
       </motion.div>
     </motion.div>
+  )
+}
+
+export function LeadForm({ opts, compact = false }: { opts: LeadOptions; compact?: boolean }) {
+  const [name, setName] = useState(opts.name ?? '')
+  const [phone, setPhone] = useState(opts.phone ? formatPhone(opts.phone) : '')
+  const [message, setMessage] = useState(opts.message ?? '')
+  const [agree, setAgree] = useState(!compact)
+  const [company, setCompany] = useState('') // honeypot
+  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+
+
+  const digits = phone.replace(/\D/g, '')
+  const valid = digits.length === 11 && agree && (!compact || !!name.trim())
+
+  const composeText = () =>
+    [
+      `Заявка с сайта ${site.brand}`,
+      opts.topic ? `Тема: ${opts.topic}` : null,
+      name ? `Имя: ${name}` : null,
+      `Телефон: ${phone}`,
+      message ? `Комментарий: ${message}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!valid || state === 'sending') return
+    setState('sending')
+    const topic = opts.correction ? `Исправление заявки: ${opts.topic ?? ''}`.trim() : opts.topic
+    const goThanks = (via: 'server' | 'messenger') => {
+      reachGoal(opts.correction ? 'lead_correction' : 'lead', { topic, source: opts.source, via })
+      saveSubmittedLead({ name, phone, message, topic, via, correction: !!opts.correction, at: new Date().toISOString() })
+      location.assign(THANKS_PATH)
+    }
+    if (company) {
+      // honeypot заполнен — молча «принимаем», чтобы не подсказывать боту
+      goThanks('server')
+      return
+    }
+    try {
+      if (site.formEndpoint) {
+        await sendLead({ name, phone, message, topic, source: opts.source })
+        goThanks('server')
+      } else {
+        const url = site.fallbackChannel === 'telegram' ? tgLink(composeText()) : waLink(composeText())
+        window.open(url, '_blank', 'noopener')
+        goThanks('messenger')
+      }
+    } catch {
+      setState('error')
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className={compact ? 'relative w-full rounded-3xl bg-white p-5 text-left text-night shadow-panel sm:p-6' : 'relative space-y-4 p-6'}>
+      <div className={compact ? 'grid gap-3 sm:grid-cols-2' : 'space-y-4'}>
+      <label className="block">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">{compact ? 'Имя' : 'Как к вам обращаться'}</span>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Ваше имя"
+          autoComplete="name"
+          required={compact}
+          className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition"
+        />
+      </label>
+      <label className="block">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Телефон *</span>
+        <input
+          value={phone}
+          onChange={(e) => setPhone(formatPhone(e.target.value))}
+          inputMode="tel"
+          autoComplete="tel"
+          required
+          placeholder="+7 (___) ___-__-__"
+          className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition"
+        />
+      </label>
+      <label className={compact ? 'block sm:col-span-2' : 'block'}>
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">{compact ? 'Комментарий (необязательно)' : 'Комментарий'}</span>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={compact ? 2 : 3}
+          placeholder="ИП или ООО, налоговый режим и количество сотрудников"
+          className="mt-1.5 w-full rounded-2xl border border-gray-200 bg-sand/60 px-4 py-3 outline-none focus:border-gold focus:ring-4 focus:ring-gold/15 transition resize-none"
+        />
+      </label>
+      </div>
+      {/* Honeypot: скрыт от людей, боты его заполняют */}
+      <div className="absolute -left-[9999px] top-0 w-px h-px overflow-hidden" aria-hidden>
+        <label>
+          Компания
+          <input tabIndex={-1} autoComplete="off" value={company} onChange={(e) => setCompany(e.target.value)} />
+        </label>
+      </div>
+      <label className={'flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-gray-500' + (compact ? ' my-4' : '')}>
+        <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 accent-gold w-4 h-4" />
+        <span>
+          Согласен(на) на обработку персональных данных согласно{' '}
+          <a href="#policy" className="underline decoration-gold/50 hover:text-ink">политике конфиденциальности</a>
+        </span>
+      </label>
+      {state === 'error' && (
+        <div role="alert" className="mb-3 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm text-red-700">
+          Не получилось отправить автоматически. Отправьте заявку одним нажатием:{' '}
+          <a className="font-semibold underline" href={waLink(composeText())} target="_blank" rel="noopener">в WhatsApp</a>
+          {' '}или позвоните <a className="font-semibold underline" href={site.phoneHref}>{site.phone}</a>
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={!valid || state === 'sending'}
+        className="w-full rounded-full bg-gold hover:bg-gold-light disabled:opacity-50 disabled:cursor-not-allowed text-night font-bold py-4 px-6 text-base transition-all hover:scale-[1.02] active:scale-[0.98] shadow-gold flex items-center justify-center gap-2"
+      >
+        <Phone className="w-4 h-4" />
+        {state === 'sending' ? 'Отправляем… это займёт до 15 секунд' : opts.cta ?? DEFAULTS.cta}
+      </button>
+      {!compact && (
+      <p className="text-center text-[12px] text-gray-400">
+        Без спама и навязчивых звонков. Или напишите сами:{' '}
+        <a href={waLink()} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">WhatsApp</a>
+        {' · '}
+        <a href={tgLink()} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">Telegram</a>
+        {' · '}
+        <a href={site.max} target="_blank" rel="noopener" className="text-ink underline decoration-gold/50">MAX</a>
+      </p>
+      )}
+    </form>
   )
 }

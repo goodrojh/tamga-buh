@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Pencil, Home, Phone, MessageCircle, Send, Clock, PhoneCall, FileSignature, BookOpen } from 'lucide-react'
+import { Check, Pencil, Home, Phone, MessageCircle, Send, Clock, PhoneCall, FileSignature } from 'lucide-react'
 import { site, waLink, tgLink } from '@/config/site'
 import { media } from '@/data/media'
-import { articles } from '@/data/articles'
 import { useLead } from '@/components/LeadModal'
-import { useArticle } from '@/components/ArticleModal'
 import { MaxIcon } from '@/components/MaxIcon'
 import { readSubmittedLead, HOME_PATH, type SubmittedLead } from '@/lib/thanks'
 
@@ -25,7 +23,6 @@ function fmtDate(iso: string) {
 
 export default function ThankYou() {
   const { open } = useLead()
-  const { openArticle } = useArticle()
   const [lead, setLead] = useState<SubmittedLead | null>(null)
 
   useEffect(() => {
@@ -173,26 +170,9 @@ export default function ThankYou() {
         </div>
       </section>
 
-      {/* While you wait */}
+
       <section className="bg-sand text-night px-4 md:px-6 py-16 md:py-20 pb-28 md:pb-20">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
-            <BookOpen className="w-5 h-5 text-gold-dark" />
-            <h2 className="font-display font-semibold text-2xl md:text-3xl">Пока ждёте звонка — 5 минут полезного</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {articles.map((a) => (
-              <button key={a.id} type="button" onClick={() => openArticle(a.id)} className="text-left bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-[0_12px_40px_-16px_rgba(10,26,51,0.3)] transition-shadow group">
-                <div className="h-36 overflow-hidden">
-                  <img src={a.image} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="p-4">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gold-dark">{a.tag} · {a.readTime}</span>
-                  <div className="font-display font-semibold text-[15px] leading-snug mt-1.5">{a.title}</div>
-                </div>
-              </button>
-            ))}
-          </div>
           <p className="text-center text-[12px] text-gray-400 mt-8">
             © {new Date().getFullYear()} {site.brand} · <a href={HOME_PATH} className="underline decoration-gold/50 hover:text-night">на главную</a>
           </p>

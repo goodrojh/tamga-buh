@@ -23,7 +23,7 @@ export default function Footer() {
             <span className="gold-text">Оставьте себе бизнес.</span>
           </motion.h2>
           <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }} className="text-white/70 mt-5 max-w-lg text-base md:text-lg">
-            Один звонок — и следующий отчёт сдаём уже мы. Первый месяц без предоплаты, цена фиксируется в договоре.
+            Расскажите, сколько у вас сотрудников и как сейчас устроен учёт. Обсудим объём работы и стоимость ежемесячного сопровождения.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.25 }} className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button onClick={() => open({ source: 'footer', topic: 'Заявка из подвала сайта' })} className="rounded-full bg-gold text-night font-bold px-8 py-4 hover:bg-gold-light transition-all shadow-gold hover:scale-105 active:scale-95">
@@ -52,7 +52,7 @@ export default function Footer() {
             <div>
               <h4 className="text-white text-[13px] font-semibold mb-4">Услуги</h4>
               <ul className="space-y-2">
-                {[['Бухгалтерское сопровождение', '#services'], ['Учёт маркетплейсов', '#services'], ['Регистрация ИП и ООО', '#kalmykia'], ['Юридический адрес', '#kalmykia'], ['3-НДФЛ', '#services'], ['Калькулятор', '#calculator'], ['Контакты и карта', '#contacts']].map(([l, h]) => (
+                {[['Бухгалтерское сопровождение', '#services'], ['Как работаем', '#how'], ['Ответы на вопросы', '#faq'], ['Контакты и карта', '#contacts']].map(([l, h]) => (
                   <li key={l}><a href={h} className="text-white/60 text-[13px] hover:text-white transition-colors">{l}</a></li>
                 ))}
               </ul>

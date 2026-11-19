@@ -7,10 +7,8 @@ import { Logo } from './TamgaMark'
 
 const BASE = import.meta.env.BASE_URL
 const NAV = [
-  { label: 'Услуги', href: BASE + '#services' },
-  { label: 'Калмыкия 1 %', href: BASE + '#kalmykia' },
-  { label: 'Цены', href: BASE + '#pricing' },
-  { label: 'Калькулятор', href: BASE + '#calculator' },
+  { label: 'Сопровождение', href: BASE + '#services' },
+  { label: 'Как работаем', href: BASE + '#how' },
   { label: 'О нас', href: BASE + '#about' },
   { label: 'Контакты', href: BASE + '#contacts' },
 ]

@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 import { media } from '@/data/media'
-import { useLead } from '@/components/LeadModal'
+import { LeadForm } from '@/components/LeadModal'
 
 const PARTNERS = ['Wildberries', 'Ozon', 'Яндекс Маркет', '1С', 'СБИС', 'Контур', 'Т-Банк', 'Сбер Бизнес', 'Альфа-Банк', 'Точка', 'Модульбанк', 'ФНС', 'СФР', 'Честный знак']
 
 const STATS = [
-  { v: '1 %', l: 'ставка УСН в Калмыкии' },
+  { v: 'ИП и ООО', l: 'с сотрудниками' },
   { v: '15 мин', l: 'среднее время ответа' },
   { v: '0 ₽', l: 'штрафов по нашей вине — платим сами' },
   { v: '100 %', l: 'удалённо, по всей России' },
@@ -15,7 +15,6 @@ const STATS = [
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const { open } = useLead()
 
   useEffect(() => {
     const v = videoRef.current
@@ -54,56 +53,53 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-night/75 via-night/35 to-night z-[1]" />
 
       <div className="relative flex-1 flex flex-col items-center justify-center text-center px-5 pt-[104px] md:pt-[120px] pb-10 z-10">
-        <div className="flex flex-col items-center w-full">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-            className="font-display font-semibold text-[34px] sm:text-5xl md:text-6xl lg:text-[64px] leading-[1.08] tracking-[-0.02em] text-white max-w-4xl mb-5"
-          >
-            Бухгалтерия, за которую
-            <br />
-            отвечаем <span className="gold-text italic inline-block pr-[0.15em] -mr-[0.15em]">как за свою</span>
-          </motion.h1>
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:gap-12 xl:gap-16">
+            <div className="min-w-0 text-center lg:text-left">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+                className="font-display font-semibold text-[34px] sm:text-5xl md:text-5xl lg:text-[46px] xl:text-[56px] leading-[1.08] tracking-[-0.02em] text-white max-w-4xl mb-5"
+              >
+                Бухгалтерия на аутсорсе для <span className="gold-text inline-block pr-[0.1em]">ИП и ООО</span> с сотрудниками
+              </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-            className="text-base md:text-lg text-white/85 max-w-[560px] leading-relaxed mb-8"
-          >
-            Ведём учёт ИП и ООО по всей России, сдаём отчёты, считаем налоги и разбираемся с маркетплейсами. Регистрируем бизнес в Калмыкии со ставкой УСН 1 % — и говорим честно, если вам это невыгодно.
-          </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+                className="text-base md:text-lg text-white/85 mx-auto max-w-[560px] leading-relaxed mb-6 lg:mx-0"
+              >
+                Ведём учёт каждый месяц, рассчитываем зарплату и налоги, оформляем кадровые документы и сдаём отчётность. Работаем удалённо по всей России.
+              </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
-            className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto"
-          >
-            <button
-              type="button"
-              onClick={() => open({ source: 'hero', topic: 'Расчёт стоимости сопровождения', title: 'Назовём точную цену за 15 минут', subtitle: 'Бухгалтер задаст 3 вопроса о бизнесе и озвучит стоимость. Цена фиксируется в договоре.' })}
-              className="w-full sm:w-auto rounded-full px-8 py-4 text-base font-bold bg-gold text-night hover:bg-gold-light transition-all shadow-gold hover:scale-105 active:scale-95"
+              <a href="#services" className="inline-flex items-center gap-2 text-sm font-semibold text-white/90 hover:text-gold">
+                Что входит в сопровождение <ArrowDown className="h-4 w-4" />
+              </a>
+              <p className="mt-4 text-sm text-white/70">
+                Первая консультация — бесплатно · Без предоплаты за первый месяц
+              </p>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+              className="mx-auto w-full max-w-xl lg:max-w-none"
             >
-              Получить расчёт бесплатно
-            </button>
-            <a
-              href="#calculator"
-              className="w-full sm:w-auto rounded-full px-8 py-4 text-base font-semibold glass text-white hover:bg-white/20 transition-all flex items-center justify-center gap-2"
-            >
-              Посчитать самому <ArrowDown className="w-4 h-4" />
-            </a>
-          </motion.div>
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-sm text-white/55 mt-4">
-            Первая консультация — бесплатно · Без предоплаты за первый месяц
-          </motion.span>
+              <LeadForm compact opts={{
+                source: 'hero',
+                topic: 'Расчёт стоимости сопровождения',
+                cta: 'Оставить заявку',
+              }} />
+            </motion.div>
+          </div>
 
           <motion.div
             variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.5 } } }}
             initial="hidden"
             animate="show"
-            className="mt-10 md:mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-4xl"
+            className="mt-10 md:mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 w-full"
           >
             {STATS.map((s) => (
               <motion.div key={s.l} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} className="glass rounded-2xl px-4 py-4 text-left">
